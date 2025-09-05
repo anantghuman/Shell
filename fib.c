@@ -44,6 +44,38 @@ int main (int argc, char **argv)
   return 0;
 }
 
+static void doFibHelper(int n, int doPrint) {
+  if (n == 0 || n == 1) {
+    printf("%d", 1);
+    exit(1);
+  }
+
+  int left = 0, right = 0;
+  char* arr[3];
+  arr[0] = "fib";
+  arr[2] = NULL;
+
+  pid_t pid1 = fork();
+
+  if (pid1 == 0) {
+    sprintf(arr[1], "%d", n - 1);
+    execvp(arr[0], arr);
+    wait(&left);
+  }
+
+  pid_t pid2 = fork();
+  if (pid2 == 0) {
+    sprintf(arr[1], "%d", n - 2);
+    execvp(arr[0], arr);
+    // wait(&right);
+  } else {
+    wait(&right);
+  }
+
+  printf("%d %d", left + right, doPrint);
+  exit(left + right);
+}
+
 /*
  * Recursively compute the specified number. If print is
  * true, print it. Otherwise, provide it to my parent process.
@@ -66,24 +98,6 @@ static void doFib (int n, int doPrint) {
     fprintf(stderr, "n is too large\n");
     exit(-1);
   }
+  doFibHelper(n, 0);
 }
 
-static int doFibHelper(int n, int doPrint) {
-  if (n == 0 || n == 1) {
-    return 1;
-  }
-
-  pid_t pid1 = fork();
-  int left = 0, right = 0;
-  if (pid1 == 0) {
-    char* arr[3];
-    arr[0] = "fib";
-    arr[1] = strdup(n-1);
-    arr[2] = NULL;
-  }
-  pid_t pid2 = fork();
-  if (pid2 == 0) {
-    right = doFibHelper(n - 2, doPrint);
-  }
-  return left + right;
-}
