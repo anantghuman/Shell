@@ -52,4 +52,38 @@ int main (int argc, char **argv)
  * a new child for each call. Each process should call
  * doFib() exactly once.
  */
-static void doFib (int n, int doPrint) {}
+
+ /*
+ n = 0: 1
+ n = 1: 1
+ fork()
+ exec(n-1)
+ exec(n-2)
+ return wait(pid1 + pid2)
+ */
+static void doFib (int n, int doPrint) {
+  if (n > 13) {
+    fprintf(stderr, "n is too large\n");
+    exit(-1);
+  }
+}
+
+static int doFibHelper(int n, int doPrint) {
+  if (n == 0 || n == 1) {
+    return 1;
+  }
+
+  pid_t pid1 = fork();
+  int left = 0, right = 0;
+  if (pid1 == 0) {
+    char* arr[3];
+    arr[0] = "fib";
+    arr[1] = strdup(n-1);
+    arr[2] = NULL;
+  }
+  pid_t pid2 = fork();
+  if (pid2 == 0) {
+    right = doFibHelper(n - 2, doPrint);
+  }
+  return left + right;
+}
