@@ -82,10 +82,12 @@ Questions regarding Part 0
     with 0 (the original process) and incrementing for
     each child process.
 
+    There are 14 children being made when doFib() begins with an input of 5. The return value of ea
 
 (2) Explain how you communicated the return value of the 
     child to the parent. What feature of wait() did you use?
 
+    We used the exit() command to return the value from the child to the parent. The feature of wait that we used to listen to the output of exit is WEXITSTATUS which we used to communicate the correct exit output.
 
 ################
 Questions regarding Part 1
