@@ -45,40 +45,40 @@ int main (int argc, char **argv)
 }
 
 static void doFibHelper(int n, int doPrint) {
-  printf("n: %d\n", n);
   if (n == 0) {
+    if (doPrint == 1) {
+      printf("0\n");
+    }
     exit(0);
   }
   if (n == 1) {
+    if (doPrint == 1) {
+      printf("1\n");
+    }
     exit(1);
   }
 
   int left = 0, right = 0;
-  char* arr[3];
-  arr[0] = "fib";
-  arr[2] = NULL;
-  arr[1] = malloc(2 * sizeof(char));
   pid_t pid1 = fork();
 
   if (pid1 == 0) {
-    // printf("in child process\n");
-    sprintf(arr[1], "%d", n - 1);
-    // printf("execing %s %s\n", arr[0], arr[1]);
-    execvp(arr[0], arr);
+    doFibHelper(n - 1, 0);
   } else {
-    // printf("in parent process\n");
-    wait(&left);
-    // printf("error");
+    waitpid(pid1, &left, 0);
+    left = WEXITSTATUS(left);
   }
 
   pid_t pid2 = fork();
   if (pid2 == 0) {
-    sprintf(arr[1], "%d", n - 2);
-    execvp(arr[0], arr);
+    doFibHelper(n - 2, 0);
   } else {
-    wait(&right);
+    waitpid(pid2, &right, 0);
+    right = WEXITSTATUS(right);
   }
-  printf("total: %d", left + right);
+
+  if (doPrint == 1) {
+    printf("%d\n", left + right);
+  }
   exit(left + right);
 }
 
@@ -100,14 +100,5 @@ static void doFibHelper(int n, int doPrint) {
  return wait(pid1 + pid2)
  */
 static void doFib (int n, int doPrint) {
-  doFibHelper(n, 1);
-  int result;
-  wait(&result);
-  if (doPrint) {
-    printf("fib(%d) = %d\n", n, result);
-  } else {
-    int result;
-    wait(&result);
-    exit(result);
-  }
+  doFibHelper(n, doPrint);
 }
