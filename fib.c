@@ -45,8 +45,11 @@ int main (int argc, char **argv)
 }
 
 static void doFibHelper(int n, int doPrint) {
-  if (n == 0 || n == 1) {
-    printf("%d", 1);
+  printf("n: %d\n", n);
+  if (n == 0) {
+    exit(0);
+  }
+  if (n == 1) {
     exit(1);
   }
 
@@ -54,25 +57,28 @@ static void doFibHelper(int n, int doPrint) {
   char* arr[3];
   arr[0] = "fib";
   arr[2] = NULL;
-
+  arr[1] = malloc(2 * sizeof(char));
   pid_t pid1 = fork();
 
   if (pid1 == 0) {
+    // printf("in child process\n");
     sprintf(arr[1], "%d", n - 1);
+    // printf("execing %s %s\n", arr[0], arr[1]);
     execvp(arr[0], arr);
+  } else {
+    // printf("in parent process\n");
     wait(&left);
+    // printf("error");
   }
 
   pid_t pid2 = fork();
   if (pid2 == 0) {
     sprintf(arr[1], "%d", n - 2);
     execvp(arr[0], arr);
-    // wait(&right);
   } else {
     wait(&right);
   }
-
-  printf("%d %d", left + right, doPrint);
+  printf("total: %d", left + right);
   exit(left + right);
 }
 
@@ -94,10 +100,14 @@ static void doFibHelper(int n, int doPrint) {
  return wait(pid1 + pid2)
  */
 static void doFib (int n, int doPrint) {
-  if (n > 13) {
-    fprintf(stderr, "n is too large\n");
-    exit(-1);
+  doFibHelper(n, 1);
+  int result;
+  wait(&result);
+  if (doPrint) {
+    printf("fib(%d) = %d\n", n, result);
+  } else {
+    int result;
+    wait(&result);
+    exit(result);
   }
-  doFibHelper(n, 0);
 }
-
