@@ -9,6 +9,7 @@ in the future */
 #include "util.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 /* Global variables */
@@ -22,6 +23,7 @@ static char *default_shell_path[2] = {"/bin", NULL};
  * fit--add extra members to help you write your code. */
 struct Command
 {
+  char *cmd_name;
   char **args;      /* Argument array for the command */
   char *outputFile; /* Redirect target for file (NULL means no redirect) */
 };
@@ -33,6 +35,7 @@ struct Command parse_command (char **tokens);
 void eval (struct Command *cmd);
 int try_exec_builtin (struct Command *cmd);
 void exec_external_cmd (struct Command *cmd);
+void printerr(char *msg);
 
 /* Main REPL: read, evaluate, and print. This function should remain relatively
    short: if it grows beyond 60 lines, you're doing too much in main() and
@@ -48,11 +51,15 @@ int main (int argc, char **argv)
       if (getline(&lineptr, &n, stdin) == -1) {
         exit(0);
       }
-      
+
       char* token = strtok(lineptr, " ");
       struct Command cmd = parse_command(&token);
-      if ()
-      
+
+      if (strcmp(cmd.cmd_name, "exit")) {
+        free(lineptr);
+        free(cmd.cmd_name);
+        exit(0);
+      }
 
       printf ("If you see these lines, you are probably running the shell "
               "skeleton. Exiting to prevent terminal spam.\n");
@@ -92,10 +99,12 @@ char **tokenize_command_line (char *cmdline)
  */
 struct Command parse_command (char **tokens)
 {
-  struct Command dummy = {.args = tokens, .outputFile = NULL};
+  struct Command dummy = {.cmd_name = "", .args = tokens, .outputFile = NULL};
   char* token = *tokens;
+  strcpy(token, dummy.cmd_name);
+
   if (strcmp(token, "exit") == 0) {
-        exit(0);
+    dummy.args = NULL;
   } else if (strcmp(token, "cd") == 0) {
     token = strtok(NULL, " \n");
     if (token == NULL || strtok(NULL, " \n") != NULL) {
@@ -105,11 +114,11 @@ struct Command parse_command (char **tokens)
     }
     dummy.args = &token;
   } else if (strcmp(token, "path") == 0) {
-    
+    dummy.args = &token;
   }
+
   return dummy;
 }
-
 /** Evaluate a single command
  *
  * Both built-ins and external commands can be passed to this function--it
@@ -128,7 +137,17 @@ void eval (struct Command *cmd)
  */
 int try_exec_builtin (struct Command *cmd)
 {
-  (void) cmd;
+  // (void) cmd;
+  char *cmd_name = cmd->cmd_name;
+  // INFO: exited in main
+  
+  if (strcmp(cmd->cmd_name, "cd")) {
+    int err = chdir(cmd->args[0]);
+    if (err == -1) {
+      printerr("an error has occurred\n");
+      return 1;
+    }
+  }
   return 0;
 }
 
@@ -141,4 +160,9 @@ void exec_external_cmd (struct Command *cmd)
 {
   (void) cmd;
   return;
+}
+
+void printerr(char *msg) {
+  char emsg[30] = "An error has occurred\n";
+  int nbytes_written = write(STDERR_FILENO, msg, strlen(msg));
 }
