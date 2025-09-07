@@ -9,6 +9,7 @@ in the future */
 #include "util.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 /* Global variables */
 /* The array for holding shell paths. Can be edited by the functions in util.c*/
@@ -39,15 +40,20 @@ void exec_external_cmd (struct Command *cmd);
 int main (int argc, char **argv)
 {
   set_shell_path (default_shell_path);
-
-  /* These two lines are just here to suppress certain warnings. You should
-   * delete them when you implement Part 1.4 */
-  (void) argc;
-  (void) argv;
-
+  char* lineptr = NULL;
+  int n = 0;
   while (1)
     {
       printf ("%s", prompt);
+      if (getline(&lineptr, &n, stdin) == -1) {
+        exit(0);
+      }
+      
+      char* token = strtok(lineptr, " ");
+      struct Command cmd = parse_command(&token);
+      if ()
+      
+
       printf ("If you see these lines, you are probably running the shell "
               "skeleton. Exiting to prevent terminal spam.\n");
       exit (1883);
@@ -87,6 +93,20 @@ char **tokenize_command_line (char *cmdline)
 struct Command parse_command (char **tokens)
 {
   struct Command dummy = {.args = tokens, .outputFile = NULL};
+  char* token = *tokens;
+  if (strcmp(token, "exit") == 0) {
+        exit(0);
+  } else if (strcmp(token, "cd") == 0) {
+    token = strtok(NULL, " \n");
+    if (token == NULL || strtok(NULL, " \n") != NULL) {
+      char emsg[30] = "An error has occurred\n";
+      int nbytes_written = write(STDERR_FILENO, emsg, strlen(emsg));
+      return dummy;
+    }
+    dummy.args = &token;
+  } else if (strcmp(token, "path") == 0) {
+    
+  }
   return dummy;
 }
 
