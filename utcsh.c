@@ -23,7 +23,6 @@ static char *default_shell_path[2] = {"/bin", NULL};
  * fit--add extra members to help you write your code. */
 struct Command
 {
-  char *cmd_name;
   char **args;      /* Argument array for the command */
   char *outputFile; /* Redirect target for file (NULL means no redirect) */
 };
@@ -51,8 +50,23 @@ int main (int argc, char **argv)
       if (getline(&lineptr, &n, stdin) == -1) {
         exit(0);
       }
-
+      
+      int num_args = 0;
+      for (int i = 0; i < strlen(lineptr); i++) {
+        if (lineptr[i] == ' ') {
+          num_args++;
+        }
+      }
+      
+      char** tokens = malloc((num_args + 1) * sizeof(char*));
       char* token = strtok(lineptr, " ");
+      int index = 0;
+      while (index <= num_args) {
+        tokens[index] = token;
+        token = strtok(NULL, " ");
+        index++;
+      }
+
       struct Command cmd = parse_command(&token);
 
       if (strcmp(cmd.cmd_name, "exit")) {
@@ -60,6 +74,7 @@ int main (int argc, char **argv)
         free(cmd.cmd_name);
         exit(0);
       }
+      char**
 
       printf ("If you see these lines, you are probably running the shell "
               "skeleton. Exiting to prevent terminal spam.\n");
