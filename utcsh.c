@@ -7,9 +7,12 @@
 /* Read the additional functions from util.h. They may be beneficial to you
 in the future */
 #include "util.h"
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
+// #include <sys/types.h>
 #include <unistd.h>
 
 /* Global variables */
@@ -43,14 +46,14 @@ int main (int argc, char **argv)
 {
   set_shell_path (default_shell_path);
   char* lineptr = NULL;
-  int n = 0;
+  size_t n = 0;
   while (1)
     {
       printf ("%s", prompt);
       if (getline(&lineptr, &n, stdin) == -1) {
         exit(0);
       }
-      
+
       int num_args = 0;
       for (int i = 0; i < strlen(lineptr); i++) {
         if (lineptr[i] == ' ') {
@@ -66,10 +69,11 @@ int main (int argc, char **argv)
         token = strtok(NULL, " ");
         index++;
       }
-      tokens[index + 1] = NULL;
-      free(lineptr);
+      tokens[index] = NULL;
+      // free(lineptr);
 
-      struct Command cmd = parse_command(&token);
+      struct Command cmd = parse_command(tokens);
+      eval(&cmd);
 
       printf ("If you see these lines, you are probably running the shell "
               "skeleton. Exiting to prevent terminal spam.\n");
@@ -135,7 +139,11 @@ struct Command parse_command (char **tokens)
  */
 void eval (struct Command *cmd)
 {
-  (void) cmd;
+  // (void) cmd;
+  int err = try_exec_builtin(cmd);
+  if (err == 0) {
+    exec_external_cmd(cmd);
+  }
   return;
 }
 
@@ -148,6 +156,14 @@ int try_exec_builtin (struct Command *cmd)
 {
   // (void) cmd;
   char *cmd_name = cmd->args[0];
+  bool s = strcmp(cmd_name, "cd");
+  if (s) {
+      printerr("true");
+  } else {
+      printerr(cmd_name);
+      printerr("cd");
+      printerr("false");
+    }
   // INFO: exited in main
   if (strcmp(cmd_name, "exit") == 0) {
     if (cmd->args[1] != NULL) {
@@ -155,19 +171,20 @@ int try_exec_builtin (struct Command *cmd)
       return 1;
     }
     exit(0);
-  }
-  else if (strcmp(cmd_name, "cd")) {
+  } else if (strcmp(cmd_name, "cd")) {
+    printerr("adaisjk");
     int err = chdir(cmd->args[1]);
+    printerr(cmd->args[1]);
     if (err == -1) {
       printerr("an error has occurred\n");
-      return 1;
     }
+    return 1;
   } else if (strcmp(cmd_name, "path")) {
     int err = set_shell_path(&cmd->args[1]);
     if (err == 0) {
       printerr("an error has occurred\n");
-      return 1;
     }
+    return 1;
   }
   return 0;
 }
@@ -189,7 +206,7 @@ void exec_external_cmd (struct Command *cmd)
       strcat(full_path, "/");
       strcat(full_path, cmd_name);
       if (access(full_path, X_OK) == 0) {
-        continue;
+        execv(full_path, &cmd->args[1]);
       }
     }
   } else {
