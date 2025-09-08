@@ -57,8 +57,8 @@ int main (int argc, char **argv)
           num_args++;
         }
       }
-      
-      char** tokens = malloc((num_args + 1) * sizeof(char*));
+
+      char** tokens = malloc((num_args + 2) * sizeof(char*));
       char* token = strtok(lineptr, " ");
       int index = 0;
       while (index <= num_args) {
@@ -66,15 +66,15 @@ int main (int argc, char **argv)
         token = strtok(NULL, " ");
         index++;
       }
+      tokens[index + 1] = NULL;
 
       struct Command cmd = parse_command(&token);
 
-      if (strcmp(cmd.cmd_name, "exit")) {
-        free(lineptr);
-        free(cmd.cmd_name);
-        exit(0);
-      }
-      char**
+      // if (strcmp(cmd.cmd_name, "exit")) {
+      //   free(lineptr);
+      //   free(cmd.cmd_name);
+      //   exit(0);
+      // }
 
       printf ("If you see these lines, you are probably running the shell "
               "skeleton. Exiting to prevent terminal spam.\n");
@@ -114,15 +114,13 @@ char **tokenize_command_line (char *cmdline)
  */
 struct Command parse_command (char **tokens)
 {
-  struct Command dummy = {.cmd_name = "", .args = tokens, .outputFile = NULL};
-  char* token = *tokens;
-  strcpy(token, dummy.cmd_name);
+  struct Command dummy = {.args = tokens, .outputFile = NULL};
+  char* token = tokens[0];
 
   if (strcmp(token, "exit") == 0) {
     dummy.args = NULL;
   } else if (strcmp(token, "cd") == 0) {
-    token = strtok(NULL, " \n");
-    if (token == NULL || strtok(NULL, " \n") != NULL) {
+    if (tokens[1] && tokens[2] != NULL) {
       char emsg[30] = "An error has occurred\n";
       int nbytes_written = write(STDERR_FILENO, emsg, strlen(emsg));
       return dummy;
@@ -153,10 +151,10 @@ void eval (struct Command *cmd)
 int try_exec_builtin (struct Command *cmd)
 {
   // (void) cmd;
-  char *cmd_name = cmd->cmd_name;
+  char *cmd_name = cmd->args[0];
   // INFO: exited in main
   
-  if (strcmp(cmd->cmd_name, "cd")) {
+  if (strcmp(cmd_name, "cd")) {
     int err = chdir(cmd->args[0]);
     if (err == -1) {
       printerr("an error has occurred\n");
