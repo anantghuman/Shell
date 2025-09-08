@@ -14,6 +14,7 @@ in the future */
 #include <sys/wait.h>
 // #include <sys/types.h>
 #include <unistd.h>
+#include <errno.h>
 
 /* Global variables */
 /* The array for holding shell paths. Can be edited by the functions in util.c*/
@@ -53,6 +54,7 @@ int main (int argc, char **argv)
       if (getline(&lineptr, &n, stdin) == -1) {
         exit(0);
       }
+      lineptr[strlen(lineptr) - 1] = '\0';
 
       int num_args = 0;
       for (int i = 0; i < strlen(lineptr); i++) {
@@ -75,9 +77,9 @@ int main (int argc, char **argv)
       struct Command cmd = parse_command(tokens);
       eval(&cmd);
 
-      printf ("If you see these lines, you are probably running the shell "
-              "skeleton. Exiting to prevent terminal spam.\n");
-      exit (1883);
+      // printf ("If you see these lines, you are probably running the shell "
+      //         "skeleton. Exiting to prevent terminal spam.\n");
+      // exit (1883);
 
       /* Read */
 
@@ -157,13 +159,6 @@ int try_exec_builtin (struct Command *cmd)
   // (void) cmd;
   char *cmd_name = cmd->args[0];
   bool s = strcmp(cmd_name, "cd");
-  if (s) {
-      printerr("true");
-  } else {
-      printerr(cmd_name);
-      printerr("cd");
-      printerr("false");
-    }
   // INFO: exited in main
   if (strcmp(cmd_name, "exit") == 0) {
     if (cmd->args[1] != NULL) {
@@ -171,18 +166,23 @@ int try_exec_builtin (struct Command *cmd)
       return 1;
     }
     exit(0);
-  } else if (strcmp(cmd_name, "cd")) {
-    printerr("adaisjk");
+  } else if (strcmp(cmd_name, "cd") == 0) {
     int err = chdir(cmd->args[1]);
-    printerr(cmd->args[1]);
+    char* path = getcwd(NULL, 0);
     if (err == -1) {
       printerr("an error has occurred\n");
     }
     return 1;
-  } else if (strcmp(cmd_name, "path")) {
+  } else if (strcmp(cmd_name, "path") == 0) {
     int err = set_shell_path(&cmd->args[1]);
     if (err == 0) {
       printerr("an error has occurred\n");
+    }
+    for (int i = 0; i < MAX_ENTRIES_IN_SHELLPATH; i++) {
+      if (shell_paths[i][0] == '\0') {
+        break;
+      }
+      printerr(shell_paths[i]);
     }
     return 1;
   }
