@@ -67,14 +67,9 @@ int main (int argc, char **argv)
         index++;
       }
       tokens[index + 1] = NULL;
+      free(lineptr);
 
       struct Command cmd = parse_command(&token);
-
-      // if (strcmp(cmd.cmd_name, "exit")) {
-      //   free(lineptr);
-      //   free(cmd.cmd_name);
-      //   exit(0);
-      // }
 
       printf ("If you see these lines, you are probably running the shell "
               "skeleton. Exiting to prevent terminal spam.\n");
@@ -115,19 +110,20 @@ char **tokenize_command_line (char *cmdline)
 struct Command parse_command (char **tokens)
 {
   struct Command dummy = {.args = tokens, .outputFile = NULL};
-  char* token = tokens[0];
+  char* cmd_name = tokens[0];
 
-  if (strcmp(token, "exit") == 0) {
+  if (strcmp(cmd_name, "exit") == 0) {
     dummy.args = NULL;
-  } else if (strcmp(token, "cd") == 0) {
+    dummy.args = tokens;
+  } else if (strcmp(cmd_name, "cd") == 0) {
     if (tokens[1] && tokens[2] != NULL) {
       char emsg[30] = "An error has occurred\n";
       int nbytes_written = write(STDERR_FILENO, emsg, strlen(emsg));
       return dummy;
     }
-    dummy.args = &token;
-  } else if (strcmp(token, "path") == 0) {
-    dummy.args = &token;
+    dummy.args = tokens;
+  } else if (strcmp(cmd_name, "path") == 0) {
+    dummy.args = tokens;
   }
 
   return dummy;
@@ -153,10 +149,22 @@ int try_exec_builtin (struct Command *cmd)
   // (void) cmd;
   char *cmd_name = cmd->args[0];
   // INFO: exited in main
-  
-  if (strcmp(cmd_name, "cd")) {
-    int err = chdir(cmd->args[0]);
+  if (strcmp(cmd_name, "exit") == 0) {
+    if (cmd->args[1] != NULL) {
+      printerr("an error has occurred\n");
+      return 1;
+    }
+    exit(0);
+  }
+  else if (strcmp(cmd_name, "cd")) {
+    int err = chdir(cmd->args[1]);
     if (err == -1) {
+      printerr("an error has occurred\n");
+      return 1;
+    }
+  } else if (strcmp(cmd_name, "path")) {
+    int err = set_shell_path(&cmd->args[1]);
+    if (err == 0) {
       printerr("an error has occurred\n");
       return 1;
     }
@@ -171,8 +179,22 @@ int try_exec_builtin (struct Command *cmd)
  */
 void exec_external_cmd (struct Command *cmd)
 {
-  (void) cmd;
-  return;
+  pid_t pid = fork();
+  char* cmd_name = cmd->args[0];
+
+  if (pid == 0) {
+    for (int i = 0; i < MAX_ENTRIES_IN_SHELLPATH; i++) {
+      char* full_path = malloc(strlen(shell_paths[i]) + strlen(cmd_name) + 2);
+      strcpy(full_path, shell_paths[i]);
+      strcat(full_path, "/");
+      strcat(full_path, cmd_name);
+      if (access(full_path, X_OK) == 0) {
+        continue;
+      }
+    }
+  } else {
+    waitpid(pid, NULL, 0);
+  }
 }
 
 void printerr(char *msg) {
