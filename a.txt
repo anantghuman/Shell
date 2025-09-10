@@ -1,4 +1,1 @@
-ls tests/test-utils/p2a-test > /tmp/anantg/utcsh/output19
-cat /tmp/anantg/utcsh/output19
-rm -f /tmp/anantg/utcsh/output19
-exit
+ls a & ls b

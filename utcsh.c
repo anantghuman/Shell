@@ -125,34 +125,55 @@ cmd_node* create_cmd_chain(struct Command cmd) {
     int i = 0;
     int curr_arg = 0;
     cmd_node *head = malloc(sizeof(cmd_node));
+    while (cmd.args[i] != NULL) {
+        if (strcmp(cmd.args[i], "&") == 0) {
+            break;
+        }
+        i++;
+    }
+    head->cmd.args = malloc((i + 1) * sizeof(char*));
+    head->cmd.args[i] = NULL;
     head->next = NULL;
 
     cmd_node *curr_node = head;
     while (cmd.args[i] != NULL) {
-        if (strcmp(cmd.args[i], "&")) {
+        if (strcmp(cmd.args[i], "&") == 0) {
+            i++;
             curr_node->next = malloc(sizeof(cmd_node));
             curr_node = curr_node->next;
 
             int j = i;
             while (cmd.args[j] != NULL) {
-                if (strcmp(cmd.args[j], "&")) {
+                if (strcmp(cmd.args[j], "&") == 0) {
                     break;
                 }
                 j++;
             }
             struct Command *cmd_new = malloc(sizeof(struct Command));
-            cmd_new->args = malloc((j + 1) * sizeof(char*));
-            cmd_new->args[j] = NULL;
+            cmd_new->args = malloc((j - i + 1) * sizeof(char*));
+            cmd_new->args[j - i] = NULL;
             curr_node->cmd = *cmd_new;
-
             curr_node->next = NULL;
             curr_arg = 0;
         } else {
             curr_node->cmd.args[curr_arg] = cmd.args[i];
             curr_arg++;
+            i++;
+
         }
     }
-    return head;
+    curr_node = head;
+    while (curr_node != NULL) { 
+      int r = 0;
+      while (curr_node->cmd.args[r] != NULL) {
+          printerr(curr_node->cmd.args[r]);
+          printerr(" ");       // use string
+          r++;
+      }
+    printerr("\n");
+    curr_node = curr_node->next;
+  }
+  return head;
 }
 
 /* NOTE: In the skeleton code, all function bodies below this line are dummy
@@ -212,11 +233,17 @@ void eval (struct Command *cmd)
   // (void) cmd;
   cmd_node *cmd_chain = create_cmd_chain(*cmd);
   
+  int i = 0;
   while (cmd_chain != NULL){
+    i++;
     int err = try_exec_builtin(cmd);
     if (err == 0) {
       exec_external_cmd(cmd);
     }
+    cmd_chain = cmd_chain->next;
+  }
+  for (int j = 0; j < i; j++) {
+    wait(NULL);
   }
   return;
 }
