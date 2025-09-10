@@ -13,7 +13,6 @@ in the future */
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
-// #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -29,8 +28,13 @@ static char *default_shell_path[2] = {"/bin", NULL};
 struct Command
 {
   char **args;      /* Argument array for the command */
-  char *outputFile; /* Redirect target for file (NULL means no redirect) */
 };
+
+typedef struct CommandNode
+{
+    struct Command cmd;
+    struct CommandNode *next;
+} cmd_node;
 
 /* Here are the functions we recommend you implement */
 
@@ -117,6 +121,40 @@ int main (int argc, char **argv)
   return 0;
 }
 
+cmd_node* create_cmd_chain(struct Command cmd) {
+    int i = 0;
+    int curr_arg = 0;
+    cmd_node *head = malloc(sizeof(cmd_node));
+    head->next = NULL;
+
+    cmd_node *curr_node = head;
+    while (cmd.args[i] != NULL) {
+        if (strcmp(cmd.args[i], "&")) {
+            curr_node->next = malloc(sizeof(cmd_node));
+            curr_node = curr_node->next;
+
+            int j = i;
+            while (cmd.args[j] != NULL) {
+                if (strcmp(cmd.args[j], "&")) {
+                    break;
+                }
+                j++;
+            }
+            struct Command *cmd_new = malloc(sizeof(struct Command));
+            cmd_new->args = malloc((j + 1) * sizeof(char*));
+            cmd_new->args[j] = NULL;
+            curr_node->cmd = *cmd_new;
+
+            curr_node->next = NULL;
+            curr_arg = 0;
+        } else {
+            curr_node->cmd.args[curr_arg] = cmd.args[i];
+            curr_arg++;
+        }
+    }
+    return head;
+}
+
 /* NOTE: In the skeleton code, all function bodies below this line are dummy
 implementations made to avoid warnings. You should delete them and replace them
 with your own implementation. */
@@ -142,7 +180,7 @@ char **tokenize_command_line (char *cmdline)
  */
 struct Command parse_command (char **tokens)
 {
-  struct Command dummy = {.args = tokens, .outputFile = NULL};
+  struct Command dummy = {.args = tokens};
   char* cmd_name = tokens[0];
   if (cmd_name == NULL) {
     dummy.args = NULL;
@@ -172,9 +210,13 @@ struct Command parse_command (char **tokens)
 void eval (struct Command *cmd)
 {
   // (void) cmd;
-  int err = try_exec_builtin(cmd);
-  if (err == 0) {
-    exec_external_cmd(cmd);
+  cmd_node *cmd_chain = create_cmd_chain(*cmd);
+  
+  while (cmd_chain != NULL){
+    int err = try_exec_builtin(cmd);
+    if (err == 0) {
+      exec_external_cmd(cmd);
+    }
   }
   return;
 }
@@ -192,7 +234,7 @@ int try_exec_builtin (struct Command *cmd)
   // INFO: exited in main
   if (strcmp(cmd_name, "exit") == 0) {
     if (cmd->args[1] != NULL) {
-      printerr("An error has occurred\n");
+      printerr(NULL);
       return 1;
     }
     exit(0);
@@ -200,13 +242,13 @@ int try_exec_builtin (struct Command *cmd)
     int err = chdir(cmd->args[1]);
     char* path = getcwd(NULL, 0);
     if (err == -1) {
-      printerr("An error has occurred\n");
+      printerr(NULL);
     }
     return 1;
   } else if (strcmp(cmd_name, "path") == 0) {
     int err = set_shell_path(&cmd->args[1]);
     if (err == 0) {
-      printerr("An error has occurred\n");
+      printerr(NULL);
     }
     for (int i = 0; i < MAX_ENTRIES_IN_SHELLPATH; i++) {
       if (shell_paths[i][0] == '\0') {
@@ -245,17 +287,17 @@ void exec_external_cmd (struct Command *cmd)
         while (cmd->args[j] != NULL) {
           if (strcmp(cmd->args[j], ">") == 0) {
             if (cmd->args[j + 1] != NULL && cmd->args[j + 2] == NULL) {
-              int fd = open(cmd->args[j + 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);          
+              int fd = open(cmd->args[j + 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
               if (fd < 0) {
-                printerr("An error has occurred\n");
+                printerr(NULL);
                 return;
               }
-              dup2(fd, 1);
-              int k = 0;
+              dup2(fd, STDOUT_FILENO);
+              dup2(fd, STDERR_FILENO);
               cmd->args = realloc(cmd->args, (j + 1) * sizeof(char*));
               cmd->args[j] = NULL; 
             } else {
-              printerr("An error has occurred\n");
+              printerr(NULL);
               return;
             }
           }
@@ -264,7 +306,7 @@ void exec_external_cmd (struct Command *cmd)
         execv(full_path, cmd->args);
       }
     }
-    printerr("An error has occurred\n");
+    printerr(NULL);
     exit(0);
   } else {
     waitpid(pid, NULL, 0);
