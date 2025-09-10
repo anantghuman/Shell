@@ -7,6 +7,7 @@
 /* Read the additional functions from util.h. They may be beneficial to you
 in the future */
 #include "util.h"
+#include <ctype.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,7 +15,6 @@ in the future */
 #include <sys/wait.h>
 // #include <sys/types.h>
 #include <unistd.h>
-#include <errno.h>
 
 /* Global variables */
 /* The array for holding shell paths. Can be edited by the functions in util.c*/
@@ -67,10 +67,17 @@ int main (int argc, char **argv)
       }
 
       if (getline(&lineptr, &n, f) == -1) {
-        printerr("An error has occurred\n");
-        exit(1);
+        if (strlen(lineptr) == 0) {
+          printerr("An error has occurred\n");
+          exit(1);
+        } else if (strlen(lineptr) > 0) {
+          exit(0);
+        }
+        exit(0);
       }
-      lineptr[strlen(lineptr) - 1] = '\0';
+      if (isspace(lineptr[strlen(lineptr) - 1])) {
+        lineptr[strlen(lineptr) - 1] = '\0';
+      }
 
       if (strlen(lineptr) == 0) {
         continue;
@@ -99,16 +106,6 @@ int main (int argc, char **argv)
         continue;
       }
       eval(&cmd);
-
-      // printf ("If you see these lines, you are probably running the shell "
-      //         "skeleton. Exiting to prevent terminal spam.\n");
-      // exit (1883);
-
-      /* Read */
-
-      /* Evaluate */
-
-      /* Print (optional) */
     }
   return 0;
 }
@@ -226,8 +223,6 @@ void exec_external_cmd (struct Command *cmd)
   pid_t pid = fork();
   char* cmd_name = cmd->args[0];
 
-  
-
   if (pid == 0) {
     if (cmd_name[0] == '/') {
       if (access(cmd_name, X_OK) == 0) {
@@ -240,11 +235,12 @@ void exec_external_cmd (struct Command *cmd)
       strcat(full_path, "/");
       strcat(full_path, cmd_name);
       full_path[strlen(shell_paths[i]) + strlen(cmd_name) + 1] = '\0';
-      // printerr(cmd_name);
       if (access(full_path, X_OK) == 0) {
-        execv(full_path, &cmd->args);
+        execv(full_path, cmd->args);
       }
     }
+    printerr("An error has occurred\n");
+    exit(0);
   } else {
     waitpid(pid, NULL, 0);
   }
@@ -252,5 +248,9 @@ void exec_external_cmd (struct Command *cmd)
 
 void printerr(char *msg) {
   char emsg[30] = "An error has occurred\n";
-  int nbytes_written = write(STDERR_FILENO, msg, strlen(msg));
+  if (msg == NULL) {
+    int nbytes_written = write(STDERR_FILENO, emsg, strlen(emsg));
+  } else {
+    int nbytes_written = write(STDERR_FILENO, msg, strlen(msg));
+  }
 }
