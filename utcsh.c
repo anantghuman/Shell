@@ -52,8 +52,11 @@ int main (int argc, char **argv)
   FILE *f;
   if (argc == 2) {
     f = fopen(argv[1], "r");
-  } else {
+  } else if (argc == 1){
     f = stdin;
+  } else {
+    printerr("An error has occurred\n");
+    exit(1);
   }
 
   while (1)
@@ -64,7 +67,8 @@ int main (int argc, char **argv)
       }
 
       if (getline(&lineptr, &n, f) == -1) {
-        exit(0);
+        printerr("An error has occurred\n");
+        exit(1);
       }
       lineptr[strlen(lineptr) - 1] = '\0';
 
@@ -222,14 +226,23 @@ void exec_external_cmd (struct Command *cmd)
   pid_t pid = fork();
   char* cmd_name = cmd->args[0];
 
+  
+
   if (pid == 0) {
+    if (cmd_name[0] == '/') {
+      if (access(cmd_name, X_OK) == 0) {
+        execv(cmd_name, cmd->args);
+      }
+    }
     for (int i = 0; i < MAX_ENTRIES_IN_SHELLPATH; i++) {
       char* full_path = malloc(strlen(shell_paths[i]) + strlen(cmd_name) + 2);
       strcpy(full_path, shell_paths[i]);
       strcat(full_path, "/");
       strcat(full_path, cmd_name);
+      full_path[strlen(shell_paths[i]) + strlen(cmd_name) + 1] = '\0';
+      // printerr(cmd_name);
       if (access(full_path, X_OK) == 0) {
-        execv(full_path, &cmd->args[1]);
+        execv(full_path, &cmd->args);
       }
     }
   } else {
