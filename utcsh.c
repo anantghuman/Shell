@@ -152,8 +152,7 @@ struct Command parse_command (char **tokens)
     dummy.args = tokens;
   } else if (strcmp(cmd_name, "cd") == 0) {
     if (tokens[1] && tokens[2] != NULL) {
-      char emsg[30] = "An error has occurred\n";
-      int nbytes_written = write(STDERR_FILENO, emsg, strlen(emsg));
+      printerr(NULL);
       dummy.args = NULL;
       return dummy;
     }
@@ -212,7 +211,6 @@ int try_exec_builtin (struct Command *cmd)
       if (shell_paths[i][0] == '\0') {
         break;
       }
-      // printerr(shell_paths[i]);
     }
     return 1;
   }
