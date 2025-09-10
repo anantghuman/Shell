@@ -135,9 +135,10 @@ cmd_node* create_cmd_chain(struct Command cmd) {
     head->cmd.args[i] = NULL;
     head->next = NULL;
 
+    i = 0;
     cmd_node *curr_node = head;
     while (cmd.args[i] != NULL) {
-        if (strcmp(cmd.args[i], "&") == 0) {
+        if (cmd.args[i][0] == '&') {
             i++;
             curr_node->next = malloc(sizeof(cmd_node));
             curr_node = curr_node->next;
@@ -155,24 +156,23 @@ cmd_node* create_cmd_chain(struct Command cmd) {
             curr_node->cmd = *cmd_new;
             curr_node->next = NULL;
             curr_arg = 0;
-        } else {
-            curr_node->cmd.args[curr_arg] = cmd.args[i];
-            curr_arg++;
-            i++;
-
+            continue;
         }
+        curr_node->cmd.args[curr_arg] = cmd.args[i];
+        curr_arg++;
+        i++;
     }
-    curr_node = head;
-    while (curr_node != NULL) { 
-      int r = 0;
-      while (curr_node->cmd.args[r] != NULL) {
-          printerr(curr_node->cmd.args[r]);
-          printerr(" ");       // use string
-          r++;
-      }
-    printerr("\n");
-    curr_node = curr_node->next;
-  }
+    // curr_node = head;
+    // while (curr_node != NULL) { 
+    //   int r = 0;
+    //   while (curr_node->cmd.args[r] != NULL) {
+    //       printerr(curr_node->cmd.args[r]);
+    //       printerr(" ");       // use string
+    //       r++;
+    //   }
+    // printerr("\n");
+    // curr_node = curr_node->next;
+    // }
   return head;
 }
 
@@ -236,11 +236,12 @@ void eval (struct Command *cmd)
   int i = 0;
   while (cmd_chain != NULL){
     i++;
-    int err = try_exec_builtin(cmd);
+    int err = try_exec_builtin(&cmd_chain->cmd);
     if (err == 0) {
-      exec_external_cmd(cmd);
+      exec_external_cmd(&cmd_chain->cmd);
     }
     cmd_chain = cmd_chain->next;
+    // wait(NULL);
   }
   for (int j = 0; j < i; j++) {
     wait(NULL);
@@ -257,8 +258,9 @@ int try_exec_builtin (struct Command *cmd)
 {
   // (void) cmd;
   char *cmd_name = cmd->args[0];
-  bool s = strcmp(cmd_name, "cd");
-  // INFO: exited in main
+  if (cmd->args[0] == NULL) {
+    return 1;
+  }
   if (strcmp(cmd_name, "exit") == 0) {
     if (cmd->args[1] != NULL) {
       printerr(NULL);
