@@ -48,13 +48,29 @@ int main (int argc, char **argv)
   set_shell_path (default_shell_path);
   char* lineptr = NULL;
   size_t n = 0;
+
+  FILE *f;
+  if (argc == 2) {
+    f = fopen(argv[1], "r");
+  } else {
+    f = stdin;
+  }
+
   while (1)
     {
-      printf ("%s", prompt);
-      if (getline(&lineptr, &n, stdin) == -1) {
+      if (f == stdin) {
+        printf ("%s", prompt);
+        fflush(stdout); 
+      }
+
+      if (getline(&lineptr, &n, f) == -1) {
         exit(0);
       }
       lineptr[strlen(lineptr) - 1] = '\0';
+
+      if (strlen(lineptr) == 0) {
+        continue;
+      }
 
       int num_args = 0;
       for (int i = 0; i < strlen(lineptr); i++) {
@@ -75,6 +91,9 @@ int main (int argc, char **argv)
       // free(lineptr);
 
       struct Command cmd = parse_command(tokens);
+      if (cmd.args == NULL) {
+        continue;
+      }
       eval(&cmd);
 
       // printf ("If you see these lines, you are probably running the shell "
@@ -117,14 +136,18 @@ struct Command parse_command (char **tokens)
 {
   struct Command dummy = {.args = tokens, .outputFile = NULL};
   char* cmd_name = tokens[0];
+  if (cmd_name == NULL) {
+    dummy.args = NULL;
+    return dummy;
+  }
 
   if (strcmp(cmd_name, "exit") == 0) {
-    dummy.args = NULL;
     dummy.args = tokens;
   } else if (strcmp(cmd_name, "cd") == 0) {
     if (tokens[1] && tokens[2] != NULL) {
       char emsg[30] = "An error has occurred\n";
       int nbytes_written = write(STDERR_FILENO, emsg, strlen(emsg));
+      dummy.args = NULL;
       return dummy;
     }
     dummy.args = tokens;
@@ -162,7 +185,7 @@ int try_exec_builtin (struct Command *cmd)
   // INFO: exited in main
   if (strcmp(cmd_name, "exit") == 0) {
     if (cmd->args[1] != NULL) {
-      printerr("an error has occurred\n");
+      printerr("An error has occurred\n");
       return 1;
     }
     exit(0);
@@ -170,19 +193,19 @@ int try_exec_builtin (struct Command *cmd)
     int err = chdir(cmd->args[1]);
     char* path = getcwd(NULL, 0);
     if (err == -1) {
-      printerr("an error has occurred\n");
+      printerr("An error has occurred\n");
     }
     return 1;
   } else if (strcmp(cmd_name, "path") == 0) {
     int err = set_shell_path(&cmd->args[1]);
     if (err == 0) {
-      printerr("an error has occurred\n");
+      printerr("An error has occurred\n");
     }
     for (int i = 0; i < MAX_ENTRIES_IN_SHELLPATH; i++) {
       if (shell_paths[i][0] == '\0') {
         break;
       }
-      printerr(shell_paths[i]);
+      // printerr(shell_paths[i]);
     }
     return 1;
   }

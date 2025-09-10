@@ -1,2 +1,2 @@
-ls > /tmp/ans/utcsh/file1 > /tmp/ans/utcsh/file2
+ls > /tmp/alexwang/utcsh/file1 > /tmp/alexwang/utcsh/file2
 exit
