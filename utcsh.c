@@ -15,6 +15,7 @@ in the future */
 #include <sys/wait.h>
 // #include <sys/types.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 /* Global variables */
 /* The array for holding shell paths. Can be edited by the functions in util.c*/
@@ -240,6 +241,26 @@ void exec_external_cmd (struct Command *cmd)
       strcat(full_path, cmd_name);
       full_path[strlen(shell_paths[i]) + strlen(cmd_name) + 1] = '\0';
       if (access(full_path, X_OK) == 0) {
+        int j = 0;
+        while (cmd->args[j] != NULL) {
+          if (strcmp(cmd->args[j], ">") == 0) {
+            if (cmd->args[j + 1] != NULL && cmd->args[j + 2] == NULL) {
+              int fd = open(cmd->args[j + 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);          
+              if (fd < 0) {
+                printerr("An error has occurred\n");
+                return;
+              }
+              dup2(fd, 1);
+              int k = 0;
+              cmd->args = realloc(cmd->args, (j + 1) * sizeof(char*));
+              cmd->args[j] = NULL; 
+            } else {
+              printerr("An error has occurred\n");
+              return;
+            }
+          }
+          j++;
+        }
         execv(full_path, cmd->args);
       }
     }
