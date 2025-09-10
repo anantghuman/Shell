@@ -1,2 +1,2 @@
-./tests/test-utils/run-evil-boom-box.sh: line 134: 1508009 Killed                  /bin/sleep 10
-./tests/test-utils/run-evil-boom-box.sh: line 143: 1508018 Segmentation fault      (core dumped) EBB_SYSCALL_CTR=$ebb_ctr ./utcsh $inp_path
+./tests/test-utils/run-evil-boom-box.sh: line 134: 1854950 Killed                  /bin/sleep 10
+./tests/test-utils/run-evil-boom-box.sh: line 143: 1854981 Segmentation fault      (core dumped) EBB_SYSCALL_CTR=$ebb_ctr ./utcsh $inp_path

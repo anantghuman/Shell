@@ -85,7 +85,13 @@ int main (int argc, char **argv)
 
       int num_args = 0;
       for (int i = 0; i < strlen(lineptr); i++) {
-        if (lineptr[i] == ' ') {
+        if (isspace(lineptr[i])) {
+          while (isspace(lineptr[i])) {
+            if (lineptr[i] == '\t') {
+              lineptr[i] = ' ';
+            }
+            i++;
+          }
           num_args++;
         }
       }
