@@ -135,6 +135,7 @@ cmd_node* create_cmd_chain(struct Command cmd) {
     int i = 0;
     int curr_arg = 0;
     cmd_node *head = malloc(sizeof(cmd_node));
+    head->cmd.args = NULL;
     while (cmd.args[i] != NULL) {
         if (strcmp(cmd.args[i], "&") == 0) {
             break;
@@ -160,10 +161,8 @@ cmd_node* create_cmd_chain(struct Command cmd) {
                 }
                 j++;
             }
-            struct Command *cmd_new = malloc(sizeof(struct Command));
-            cmd_new->args = malloc((j - i + 1) * sizeof(char*));
-            cmd_new->args[j - i] = NULL;
-            curr_node->cmd = *cmd_new;
+            curr_node->cmd.args = malloc((j - i + 1) * sizeof(char*));
+            curr_node->cmd.args[j - i] = NULL;
             curr_node->next = NULL;
             curr_arg = 0;
             continue;
