@@ -56,7 +56,7 @@ static void doFibHelper(int n, int doPrint) {
       printf("1\n");
     }
     exit(1);
-  }
+}
 
   int left = 0, right = 0;
   pid_t pid1 = fork();

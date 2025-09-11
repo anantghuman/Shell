@@ -110,7 +110,6 @@ int main (int argc, char **argv)
         index++;
       }
       tokens[index] = NULL;
-      // free(lineptr);
 
       struct Command cmd = parse_command(tokens);
       if (cmd.args == NULL) {
@@ -234,19 +233,23 @@ void eval (struct Command *cmd)
   cmd_node *cmd_chain = create_cmd_chain(*cmd);
   
   int i = 0;
+  bool external = false;
   while (cmd_chain != NULL){
     i++;
     int err = try_exec_builtin(&cmd_chain->cmd);
     if (err == 0) {
+      external = true;
       exec_external_cmd(&cmd_chain->cmd);
     }
     cmd_chain = cmd_chain->next;
     // wait(NULL);
   }
+  if (external == false) {
+    return;
+  }
   for (int j = 0; j < i; j++) {
     wait(NULL);
   }
-  return;
 }
 
 /** Execute built-in commands
@@ -337,8 +340,6 @@ void exec_external_cmd (struct Command *cmd)
     }
     printerr(NULL);
     exit(0);
-  } else {
-    waitpid(pid, NULL, 0);
   }
 }
 
