@@ -1,0 +1,15 @@
+AddressSanitizer:DEADLYSIGNAL
+=================================================================
+==1690665==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x7f935763d89c bp 0x7ffc3d986360 sp 0x7ffc3d985ac0 T0)
+==1690665==The signal is caused by a READ memory access.
+==1690665==Hint: address points to the zero page.
+    #0 0x7f935763d89b in __interceptor_strcmp ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors.inc:420
+    #1 0x55e2a1de3f1f in try_exec_builtin /u/alexwang/Documents/cs439/shell_project/utcsh.c:285
+    #2 0x55e2a1de3aa7 in eval /u/alexwang/Documents/cs439/shell_project/utcsh.c:239
+    #3 0x55e2a1de276c in main /u/alexwang/Documents/cs439/shell_project/utcsh.c:122
+    #4 0x7f9356a2c082 in __libc_start_main ../csu/libc-start.c:308
+    #5 0x55e2a1de172d in _start (/u/alexwang/Documents/cs439/shell_project/utcsh+0x972d)
+
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: SEGV ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors.inc:420 in __interceptor_strcmp
+==1690665==ABORTING

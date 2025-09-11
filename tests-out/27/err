@@ -1,0 +1,26 @@
+
+=================================================================
+==1690667==ERROR: LeakSanitizer: detected memory leaks
+
+Direct leak of 16 byte(s) in 2 object(s) allocated from:
+    #0 0x7f592591c808 in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:144
+    #1 0x55e3e5e8b086 in create_cmd_chain /u/alexwang/Documents/cs439/shell_project/utcsh.c:162
+    #2 0x55e3e5e8ba34 in eval /u/alexwang/Documents/cs439/shell_project/utcsh.c:232
+    #3 0x55e3e5e8a76c in main /u/alexwang/Documents/cs439/shell_project/utcsh.c:122
+    #4 0x7f5924cd4082 in __libc_start_main ../csu/libc-start.c:308
+
+Direct leak of 16 byte(s) in 1 object(s) allocated from:
+    #0 0x7f592591c808 in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:144
+    #1 0x55e3e5e8a8a8 in create_cmd_chain /u/alexwang/Documents/cs439/shell_project/utcsh.c:136
+    #2 0x55e3e5e8ba34 in eval /u/alexwang/Documents/cs439/shell_project/utcsh.c:232
+    #3 0x55e3e5e8a76c in main /u/alexwang/Documents/cs439/shell_project/utcsh.c:122
+    #4 0x7f5924cd4082 in __libc_start_main ../csu/libc-start.c:308
+
+Indirect leak of 24 byte(s) in 1 object(s) allocated from:
+    #0 0x7f592591c808 in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:144
+    #1 0x55e3e5e8aab4 in create_cmd_chain /u/alexwang/Documents/cs439/shell_project/utcsh.c:143
+    #2 0x55e3e5e8ba34 in eval /u/alexwang/Documents/cs439/shell_project/utcsh.c:232
+    #3 0x55e3e5e8a76c in main /u/alexwang/Documents/cs439/shell_project/utcsh.c:122
+    #4 0x7f5924cd4082 in __libc_start_main ../csu/libc-start.c:308
+
+SUMMARY: AddressSanitizer: 56 byte(s) leaked in 4 allocation(s).

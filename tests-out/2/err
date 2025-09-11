@@ -1,0 +1,23 @@
+
+=================================================================
+==1690568==ERROR: LeakSanitizer: detected memory leaks
+
+Direct leak of 80 byte(s) in 5 object(s) allocated from:
+    #0 0x7f47be38e808 in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:144
+    #1 0x55b6c39af8a8 in create_cmd_chain /u/alexwang/Documents/cs439/shell_project/utcsh.c:136
+    #2 0x55b6c39b0a34 in eval /u/alexwang/Documents/cs439/shell_project/utcsh.c:232
+    #3 0x55b6c39af76c in main /u/alexwang/Documents/cs439/shell_project/utcsh.c:122
+    #4 0x7f47bd746082 in __libc_start_main ../csu/libc-start.c:308
+
+Direct leak of 57 byte(s) in 3 object(s) allocated from:
+    #0 0x7f47be38ec3e in __interceptor_realloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:163
+    #1 0x7f47bd831297 in __GI___getcwd ../sysdeps/unix/sysv/linux/getcwd.c:84
+
+Indirect leak of 112 byte(s) in 5 object(s) allocated from:
+    #0 0x7f47be38e808 in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:144
+    #1 0x55b6c39afab4 in create_cmd_chain /u/alexwang/Documents/cs439/shell_project/utcsh.c:143
+    #2 0x55b6c39b0a34 in eval /u/alexwang/Documents/cs439/shell_project/utcsh.c:232
+    #3 0x55b6c39af76c in main /u/alexwang/Documents/cs439/shell_project/utcsh.c:122
+    #4 0x7f47bd746082 in __libc_start_main ../csu/libc-start.c:308
+
+SUMMARY: AddressSanitizer: 249 byte(s) leaked in 13 allocation(s).

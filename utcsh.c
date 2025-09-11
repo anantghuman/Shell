@@ -40,9 +40,9 @@ typedef struct CommandNode
 
 char **tokenize_command_line (char *cmdline);
 struct Command parse_command (char **tokens);
-void eval (struct Command *cmd);
+int eval (struct Command *cmd);
 int try_exec_builtin (struct Command *cmd);
-void exec_external_cmd (struct Command *cmd);
+int exec_external_cmd (struct Command *cmd);
 void printerr(char *msg);
 
 /* Main REPL: read, evaluate, and print. This function should remain relatively
@@ -74,10 +74,13 @@ int main (int argc, char **argv)
       if (getline(&lineptr, &n, f) == -1) {
         if (strlen(lineptr) == 0) {
           printerr("An error has occurred\n");
+          free(lineptr);
           exit(1);
         } else if (strlen(lineptr) > 0) {
+          free(lineptr);
           exit(0);
         }
+        free(lineptr);
         exit(0);
       }
       if (isspace(lineptr[strlen(lineptr) - 1])) {
@@ -115,8 +118,15 @@ int main (int argc, char **argv)
       if (cmd.args == NULL) {
         continue;
       }
-      eval(&cmd);
+
+      int err = eval(&cmd);
+      free(tokens);
+      if (err == 0) {
+        free(lineptr);
+        exit(err);
+      }
     }
+    free(lineptr);
   return 0;
 }
 
@@ -161,17 +171,6 @@ cmd_node* create_cmd_chain(struct Command cmd) {
         curr_arg++;
         i++;
     }
-    // curr_node = head;
-    // while (curr_node != NULL) { 
-    //   int r = 0;
-    //   while (curr_node->cmd.args[r] != NULL) {
-    //       printerr(curr_node->cmd.args[r]);
-    //       printerr(" ");       // use string
-    //       r++;
-    //   }
-    // printerr("\n");
-    // curr_node = curr_node->next;
-    // }
   return head;
 }
 
@@ -227,11 +226,12 @@ struct Command parse_command (char **tokens)
  * Both built-ins and external commands can be passed to this function--it
  * should work out what the correct type is and take the appropriate action.
  */
-void eval (struct Command *cmd)
+int eval (struct Command *cmd)
 {
   // (void) cmd;
-  cmd_node *cmd_chain = create_cmd_chain(*cmd);
-  
+  cmd_node *head = create_cmd_chain(*cmd);
+  cmd_node *cmd_chain = head;
+
   int i = 0;
   bool external = false;
   while (cmd_chain != NULL){
@@ -239,17 +239,35 @@ void eval (struct Command *cmd)
     int err = try_exec_builtin(&cmd_chain->cmd);
     if (err == 0) {
       external = true;
-      exec_external_cmd(&cmd_chain->cmd);
+      int e = exec_external_cmd(&cmd_chain->cmd);
+      if (e == 0) {
+        return e;
+      }
+    } else if (err == -1) {
+      while (head != NULL) {
+        free(head->cmd.args);
+        cmd_node *next = head->next;
+        free(head);
+        head = next;
+      }
+      return 0;
     }
     cmd_chain = cmd_chain->next;
-    // wait(NULL);
   }
   if (external == false) {
-    return;
+    return 1;
   }
   for (int j = 0; j < i; j++) {
     wait(NULL);
   }
+
+  while (head != NULL) {
+    free(head->cmd.args);
+    cmd_node *next = head->next;
+    free(head);
+    head = next;
+  }
+  return 1;
 }
 
 /** Execute built-in commands
@@ -269,7 +287,7 @@ int try_exec_builtin (struct Command *cmd)
       printerr(NULL);
       return 1;
     }
-    exit(0);
+    return -1;
   } else if (strcmp(cmd_name, "cd") == 0) {
     int err = chdir(cmd->args[1]);
     char* path = getcwd(NULL, 0);
@@ -297,7 +315,7 @@ int try_exec_builtin (struct Command *cmd)
  * Execute an external command by fork-and-exec. Should also take care of
  * output redirection, if any is requested
  */
-void exec_external_cmd (struct Command *cmd)
+int exec_external_cmd (struct Command *cmd)
 {
   pid_t pid = fork();
   char* cmd_name = cmd->args[0];
@@ -322,7 +340,7 @@ void exec_external_cmd (struct Command *cmd)
               int fd = open(cmd->args[j + 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
               if (fd < 0) {
                 printerr(NULL);
-                return;
+                return 1;
               }
               dup2(fd, STDOUT_FILENO);
               dup2(fd, STDERR_FILENO);
@@ -330,17 +348,19 @@ void exec_external_cmd (struct Command *cmd)
               cmd->args[j] = NULL; 
             } else {
               printerr(NULL);
-              return;
+              return 1;
             }
           }
           j++;
         }
         execv(full_path, cmd->args);
       }
+      free(full_path);
     }
     printerr(NULL);
-    exit(0);
+    return 0;
   }
+  return 1;
 }
 
 void printerr(char *msg) {

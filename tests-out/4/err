@@ -1,0 +1,25 @@
+utcsh.c:292:15: runtime error: null pointer passed as argument 1, which is declared to never be null
+An error has occurred
+
+=================================================================
+==1690572==ERROR: LeakSanitizer: detected memory leaks
+
+Direct leak of 42 byte(s) in 1 object(s) allocated from:
+    #0 0x7f80ca4b5c3e in __interceptor_realloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:163
+    #1 0x7f80c9958297 in __GI___getcwd ../sysdeps/unix/sysv/linux/getcwd.c:84
+
+Direct leak of 16 byte(s) in 1 object(s) allocated from:
+    #0 0x7f80ca4b5808 in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:144
+    #1 0x55b2ff9ba8a8 in create_cmd_chain /u/alexwang/Documents/cs439/shell_project/utcsh.c:136
+    #2 0x55b2ff9bba34 in eval /u/alexwang/Documents/cs439/shell_project/utcsh.c:232
+    #3 0x55b2ff9ba76c in main /u/alexwang/Documents/cs439/shell_project/utcsh.c:122
+    #4 0x7f80c986d082 in __libc_start_main ../csu/libc-start.c:308
+
+Indirect leak of 16 byte(s) in 1 object(s) allocated from:
+    #0 0x7f80ca4b5808 in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:144
+    #1 0x55b2ff9baab4 in create_cmd_chain /u/alexwang/Documents/cs439/shell_project/utcsh.c:143
+    #2 0x55b2ff9bba34 in eval /u/alexwang/Documents/cs439/shell_project/utcsh.c:232
+    #3 0x55b2ff9ba76c in main /u/alexwang/Documents/cs439/shell_project/utcsh.c:122
+    #4 0x7f80c986d082 in __libc_start_main ../csu/libc-start.c:308
+
+SUMMARY: AddressSanitizer: 74 byte(s) leaked in 3 allocation(s).
