@@ -1,32 +1,39 @@
-alexwang: 2025-09-11 16:02:59 - 2025-09-11 16:32:59, 30 minutes –   created changelog
-alexwang: 2025-09-11 16:32:59 - 2025-09-11 17:02:59, 30 minutes –   finished cleaning up logic
-anantghuman: 2025-09-11 17:02:59 - 2025-09-11 17:32:59, 30 minutes –   fixing previous push, forgot to push some stuff
-anantghuman: 2025-09-11 17:32:59 - 2025-09-11 18:02:59, 30 minutes –   fixed error 11 and error 26
-anantghuman: 2025-09-11 18:02:59 - 2025-09-11 18:32:59, 30 minutes –   fixed mem leaks for 27-30
-alexwang: 2025-09-11 18:32:59 - 2025-09-11 19:02:59, 30 minutes –   mem leak fixed tc 4 on asan
-anantghuman: 2025-09-11 19:02:59 - 2025-09-11 19:32:59, 30 minutes –   mem leak fixes
-alexwang: 2025-09-11 19:32:59 - 2025-09-11 20:02:59, 30 minutes –   worked through memory leaks with make asan
-anantghuman: 2025-09-11 20:02:59 - 2025-09-11 20:32:59, 30 minutes –   started working on testcase 32 :(
-alexwang: 2025-09-11 20:32:59 - 2025-09-11 21:02:59, 30 minutes –   more work on 3.3, only failing 26 29 32
-anantghuman: 2025-09-11 21:02:59 - 2025-09-11 21:32:59, 30 minutes –   more work on concurrency
-alexwang: 2025-09-11 21:32:59 - 2025-09-11 22:02:59, 30 minutes –   worked on 3.3
-anantghuman: 2025-09-11 22:02:59 - 2025-09-11 22:32:59, 30 minutes –   passing till testcase 25
-alexwang: 2025-09-11 22:32:59 - 2025-09-11 23:02:59, 30 minutes –   qol
-anantghuman: 2025-09-11 23:02:59 - 2025-09-11 23:32:59, 30 minutes –   fixed test 14 (angry face)
-alexwang: 2025-09-11 23:32:59 - 2025-09-12 00:02:59, 30 minutes –   up to testcase 13 working pt2
-anantghuman: 2025-09-12 00:02:59 - 2025-09-12 00:32:59, 30 minutes –   fixed problem 10 and 11
-alexwang: 2025-09-12 00:32:59 - 2025-09-12 01:02:59, 30 minutes –   passed first 6 test cases of pt2
-anantghuman: 2025-09-12 01:02:59 - 2025-09-12 01:32:59, 30 minutes –   tested path and cd both work
-alexwang: 2025-09-12 01:32:59 - 2025-09-12 02:02:59, 30 minutes –   worked on debugging, parse_command working, fix segfaults
-anantghuman: 2025-09-12 02:02:59 - 2025-09-12 02:32:59, 30 minutes –   worked on executing for path and fixed issues in exit
-alexwang: 2025-09-12 02:32:59 - 2025-09-12 03:02:59, 30 minutes –   fixed char** stuff
-anantghuman: 2025-09-12 03:02:59 - 2025-09-12 03:32:59, 30 minutes –   reworked and brainstormed parse command and tokens to meet requirements
-alexwang: 2025-09-12 03:32:59 - 2025-09-12 04:02:59, 30 minutes –   worked on try_exec_builtin
-anantghuman: 2025-09-12 04:02:59 - 2025-09-12 04:32:59, 30 minutes –   started working on part 2
-alexwang: 2025-09-12 04:32:59 - 2025-09-12 05:02:59, 30 minutes –   finished part 1
-anantghuman: 2025-09-12 05:02:59 - 2025-09-12 05:32:59, 30 minutes –   started working on shell design and handle.c
-alexwang: 2025-09-12 05:32:59 - 2025-09-12 06:02:59, 30 minutes –   FINISHED FIB
-anantghuman: 2025-09-12 06:02:59 - 2025-09-12 06:32:59, 30 minutes –   more work on fib.c
-alexwang: 2025-09-12 06:32:59 - 2025-09-12 07:02:59, 30 minutes –   more dev on fib
-anantghuman: 2025-09-12 07:02:59 - 2025-09-12 07:32:59, 30 minutes –   started working on fib.c
-alexwang: 2025-09-12 07:32:59 - 2025-09-12 08:02:59, 30 minutes –   initial commit
+Sep 11, 03:59 PM - 04:02 PM by alexwang, created changelog
+Sep 11, 03:20 PM - 03:59 PM by alexwang, finished cleaning up logic
+Sep 11, 03:11 PM - 03:20 PM by anantghuman, fixing previous push, forgot to push some stuff
+Sep 11, 02:41 PM - 03:11 PM by anantghuman, fixed error 11 and error 26
+
+Sep 10, 09:06 PM - 09:36 PM by anantghuman, fixed mem leaks for 27-30
+Sep 10, 08:30 PM - 09:06 PM by alexwang, mem leak fixed tc 4 on asan
+Sep 10, 07:57 PM - 08:30 PM by anantghuman, mem leak fixes
+Sep 10, 07:23 PM - 07:57 PM by alexwang, worked through memory leaks with make asan
+Sep 10, 06:49 PM - 07:23 PM by anantghuman, started working on testcase 32 :(
+Sep 10, 06:05 PM - 06:49 PM by alexwang, more work on 3.3, only failing 26 29 32
+Sep 10, 05:31 PM - 06:05 PM by anantghuman, more work on concurrency
+Sep 10, 04:43 PM - 05:31 PM by alexwang, worked on 3.3
+Sep 10, 04:13 PM - 04:43 PM by anantghuman, passing till testcase 25
+
+Sep 09, 09:31 PM - 09:40 PM by alexwang, qol
+Sep 09, 08:58 PM - 09:31 PM by anantghuman, fixed test 14 (angry face)
+Sep 09, 08:27 PM - 08:58 PM by alexwang, up to testcase 13 working pt2
+Sep 09, 07:51 PM - 08:27 PM by anantghuman, fixed problem 10 and 11
+Sep 09, 07:21 PM - 07:51 PM by alexwang, passed first 6 test cases of pt2
+
+Sep 08, 04:45 PM - 05:13 PM by anantghuman, tested path and cd both work
+Sep 08, 04:06 PM - 04:45 PM by alexwang, worked on debugging, parse_command working, fix segfaults
+Sep 08, 03:36 PM - 04:06 PM by anantghuman, worked on executing for path and fixed issues in exit
+
+Sep 07, 07:09 PM - 07:18 PM by alexwang, fixed char** stuff
+Sep 07, 06:22 PM - 07:09 PM by anantghuman, reworked and brainstormed parse command and tokens to meet requirements
+Sep 07, 05:49 PM - 06:22 PM by alexwang, worked on try_exec_builtin
+Sep 07, 05:19 PM - 05:49 PM by anantghuman, started working on part 2
+
+Sep 06, 05:22 PM - 05:53 PM by alexwang, finished part 1
+Sep 06, 04:33 PM - 05:22 PM by anantghuman, started working on shell design and handle.c
+Sep 06, 03:51 PM - 04:33 PM by alexwang, FINISHED FIB
+Sep 06, 03:21 PM - 03:51 PM by anantghuman, more work on fib.c
+
+Sep 05, 05:45 PM - 06:22 PM by alexwang, more dev on fib
+Sep 05, 05:15 PM - 05:45 PM by anantghuman, started working on fib.c
+
+Sep 04, 10:44 PM - 10:44 PM by alexwang, initial commit
