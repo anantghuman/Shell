@@ -369,7 +369,7 @@ int exec_external_cmd (struct Command *cmd)
               if (fd < 0) {
                 printerr(NULL);
                 free(full_path);
-                return 1;
+                exit(1);
               }
               dup2(fd, STDOUT_FILENO);
               dup2(fd, STDERR_FILENO);
@@ -380,7 +380,7 @@ int exec_external_cmd (struct Command *cmd)
             } else {
               free(full_path);
               printerr(NULL);
-              return 1;
+              exit(1);
             }
           }
           j++;
@@ -399,7 +399,7 @@ int exec_external_cmd (struct Command *cmd)
     if (!all_ampersands) {
       printerr(NULL);
     }
-    return(1);
+    exit(1);
   }
   return 1;
 }
