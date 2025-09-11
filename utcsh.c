@@ -233,7 +233,6 @@ struct Command parse_command (char **tokens)
       dummy.args = NULL;
       return dummy;
     }
-
   if (strcmp(cmd_name, "exit") == 0) 
     {
       dummy.args = tokens;
@@ -246,13 +245,12 @@ struct Command parse_command (char **tokens)
           dummy.args = NULL;
           return dummy;
         }
-        dummy.args = tokens;
-  } 
+      dummy.args = tokens;
+    } 
   else if (strcmp(cmd_name, "path") == 0) 
     {
       dummy.args = tokens;
     }
-
   return dummy;
 }
 
@@ -344,9 +342,9 @@ int try_exec_builtin (struct Command *cmd)
       int err = chdir(cmd->args[1]);
       char* path = getcwd(NULL, 0);
       if (err == -1) 
-      {
-        printerr();
-      }
+        {
+          printerr();
+        }
       free(path);
       return 1;
     } 
