@@ -43,7 +43,7 @@ struct Command parse_command (char **tokens);
 int eval (struct Command *cmd);
 int try_exec_builtin (struct Command *cmd);
 int exec_external_cmd (struct Command *cmd);
-void printerr(char *msg);
+void printerr();
 
 /* Main REPL: read, evaluate, and print. This function should remain relatively
    short: if it grows beyond 60 lines, you're doing too much in main() and
@@ -60,13 +60,13 @@ int main (int argc, char **argv)
   } else if (argc == 1){
     f = stdin;
   } else {
-    printerr("An error has occurred\n");
+    printerr();
     exit(1);
   }
 
   int c = fgetc(f);
   if (c == EOF) {
-    printerr("An error has occurred\n");
+    printerr();
     exit(1);
   }
   ungetc(c, f);
@@ -75,51 +75,23 @@ int main (int argc, char **argv)
     {
       if (f == stdin) {
         printf ("%s", prompt);
-        fflush(stdout); 
       }
 
       if (getline(&lineptr, &n, f) == -1) {
         if (strlen(lineptr) == 0) {
-          printerr("An error has occurred\n");
+          printerr();
           free(lineptr);
           exit(1);
-        } else if (strlen(lineptr) > 0) {
-          free(lineptr);
-          exit(0);
         }
         free(lineptr);
         exit(0);
       }
+
       if (isspace(lineptr[strlen(lineptr) - 1])) {
         lineptr[strlen(lineptr) - 1] = '\0';
       }
 
-      if (strlen(lineptr) == 0) {
-        continue;
-      }
-
-      int num_args = 0;
-      for (size_t i = 0; i < strlen(lineptr); i++) {
-        if (isspace(lineptr[i])) {
-          while (isspace(lineptr[i])) {
-            if (lineptr[i] == '\t') {
-              lineptr[i] = ' ';
-            }
-            i++;
-          }
-          num_args++;
-        }
-      }
-
-      char** tokens = malloc((num_args + 2) * sizeof(char*));
-      char* token = strtok(lineptr, " ");
-      int index = 0;
-      while (index <= num_args) {
-        tokens[index] = token;
-        token = strtok(NULL, " ");
-        index++;
-      }
-      tokens[index] = NULL;
+      char **tokens = tokenize_command_line(lineptr);
 
       struct Command cmd = parse_command(tokens);
       if (cmd.args == NULL) {
@@ -139,25 +111,25 @@ int main (int argc, char **argv)
 }
 
 cmd_node* create_cmd_chain(struct Command cmd) {
-    int i = 0;
+    int index = 0;
     int curr_arg = 0;
     cmd_node *head = malloc(sizeof(cmd_node));
     head->cmd.args = NULL;
-    while (cmd.args[i] != NULL) {
-        if (strcmp(cmd.args[i], "&") == 0) {
+    while (cmd.args[index] != NULL) {
+        if (strcmp(cmd.args[index], "&") == 0) {
             break;
         }
-        i++;
+        index++;
     }
-    head->cmd.args = malloc((i + 1) * sizeof(char*));
-    head->cmd.args[i] = NULL;
-    for (int k = 0; k < i; k++) {
+    head->cmd.args = malloc((index + 1) * sizeof(char*));
+    head->cmd.args[index] = NULL;
+    for (int k = 0; k < index; k++) {
         head->cmd.args[k] = cmd.args[k];
     }
 
     head->next = NULL;
 
-    i = 0;
+    int i = 0;
     cmd_node *curr_node = head;
     while (cmd.args[i] != NULL) {
         if (strcmp(cmd.args[i], "&") == 0) {
@@ -170,15 +142,15 @@ cmd_node* create_cmd_chain(struct Command cmd) {
             curr_node->next = malloc(sizeof(cmd_node));
             curr_node = curr_node->next;
 
-            int j = i;
-            while (cmd.args[j] != NULL) {
-                if (strcmp(cmd.args[j], "&") == 0) {
+            int num_chars_til_amp = i;
+            while (cmd.args[num_chars_til_amp] != NULL) {
+                if (strcmp(cmd.args[num_chars_til_amp], "&") == 0) {
                     break;
                 }
-                j++;
+                num_chars_til_amp++;
             }
-            curr_node->cmd.args = malloc((j - i + 1) * sizeof(char*));
-            curr_node->cmd.args[j - i] = NULL;
+            curr_node->cmd.args = malloc((num_chars_til_amp - i + 1) * sizeof(char*));
+            curr_node->cmd.args[num_chars_til_amp - i] = NULL;
             curr_node->next = NULL;
             curr_arg = 0;
             continue;
@@ -200,10 +172,27 @@ with your own implementation. */
  * much easier to process. First, you should figure out how many arguments you
  * have, then allocate a char** of sufficient size and fill it using strtok()
  */
-char **tokenize_command_line (char *cmdline)
+char **tokenize_command_line (char *lineptr)
 {
-  (void) cmdline;
-  return NULL;
+  int num_args = 0;
+  for (size_t i = 0; i < strlen(lineptr); i++) {
+    while (isspace(lineptr[i])) {
+      lineptr[i] = ' ';
+      i++;
+    }
+    num_args++;
+  }
+
+  char** tokens = malloc((num_args + 2) * sizeof(char*));
+  char* token = strtok(lineptr, " ");
+  int index = 0;
+  while (index <= num_args) {
+    tokens[index] = token;
+    token = strtok(NULL, " ");
+    index++;
+  }
+  tokens[index] = NULL;
+  return tokens;
 }
 
 /** Turn tokens into a command.
@@ -226,7 +215,7 @@ struct Command parse_command (char **tokens)
     dummy.args = tokens;
   } else if (strcmp(cmd_name, "cd") == 0) {
     if (tokens[1] == NULL || (tokens[1] != NULL && tokens[2] != NULL)) {
-      printerr(NULL);
+      printerr();
       dummy.args = NULL;
       return dummy;
     }
@@ -237,6 +226,17 @@ struct Command parse_command (char **tokens)
 
   return dummy;
 }
+
+void free_cmd_chain(cmd_node *head) {
+  cmd_node *h = head;
+  while (h!= NULL) {
+    free(h->cmd.args);
+    cmd_node *next = h->next;
+    free(h);
+    h = next;
+  }
+}
+
 /** Evaluate a single command
  *
  * Both built-ins and external commands can be passed to this function--it
@@ -252,49 +252,31 @@ int eval (struct Command *cmd)
   bool external = false;
   while (cmd_chain != NULL){
     i++;
-    int err = try_exec_builtin(&cmd_chain->cmd);
-    if (err == 0) {
+    int builtin_err = try_exec_builtin(&cmd_chain->cmd);
+    if (builtin_err == 0) {
       external = true;
-      int e = exec_external_cmd(&cmd_chain->cmd);
-      if (e == 0) {
-        while (head != NULL) {
-          free(head->cmd.args);
-          cmd_node *next = head->next;
-          free(head);
-          head = next;
-        }
-        return e;
+      int extern_err = exec_external_cmd(&cmd_chain->cmd);
+      if (extern_err == 0) {
+        free_cmd_chain(head);
+        return extern_err;
       }
-    } else if (err == -1) {
-      while (head != NULL) {
-        free(head->cmd.args);
-        cmd_node *next = head->next;
-        free(head);
-        head = next;
-      }
+    } else if (builtin_err == -1) {
+      free_cmd_chain(head);
       return 0;
     }
     cmd_chain = cmd_chain->next;
   }
-  if (external == false) {
-    while (head != NULL) {
-          free(head->cmd.args);
-          cmd_node *next = head->next;
-          free(head);
-          head = next;
-        }
+
+  if (!external) {
+    free_cmd_chain(head);
     return 1;
   }
+
   for (int j = 0; j < i; j++) {
     wait(NULL);
   }
 
-  while (head != NULL) {
-    free(head->cmd.args);
-    cmd_node *next = head->next;
-    free(head);
-    head = next;
-  }
+  free_cmd_chain(head);
   return 1;
 }
 
@@ -309,9 +291,10 @@ int try_exec_builtin (struct Command *cmd)
   if (cmd->args[0] == NULL) {
     return 1;
   }
+
   if (strcmp(cmd_name, "exit") == 0) {
     if (cmd->args[1] != NULL) {
-      printerr(NULL);
+      printerr();
       return 1;
     }
     return -1;
@@ -319,19 +302,14 @@ int try_exec_builtin (struct Command *cmd)
     int err = chdir(cmd->args[1]);
     char* path = getcwd(NULL, 0);
     if (err == -1) {
-      printerr(NULL);
+      printerr();
     }
     free(path);
     return 1;
   } else if (strcmp(cmd_name, "path") == 0) {
     int err = set_shell_path(&cmd->args[1]);
     if (err == 0) {
-      printerr(NULL);
-    }
-    for (int i = 0; i < MAX_ENTRIES_IN_SHELLPATH; i++) {
-      if (shell_paths[i][0] == '\0') {
-        break;
-      }
+      printerr();
     }
     return 1;
   }
@@ -349,37 +327,32 @@ int exec_external_cmd (struct Command *cmd)
   char* cmd_name = cmd->args[0];
 
   if (pid == 0) {
-    if (cmd_name[0] == '/') {
-      if (access(cmd_name, X_OK) == 0) {
-        execv(cmd_name, cmd->args);
-      }
+    if (is_absolute_path(cmd_name)) {
+      execv(cmd_name, cmd->args);
     }
     for (int i = 0; i < MAX_ENTRIES_IN_SHELLPATH; i++) {
-      char* full_path = malloc(strlen(shell_paths[i]) + strlen(cmd_name) + 2);
-      strcpy(full_path, shell_paths[i]);
-      strcat(full_path, "/");
-      strcat(full_path, cmd_name);
-      full_path[strlen(shell_paths[i]) + strlen(cmd_name) + 1] = '\0';
-      if (access(full_path, X_OK) == 0) {
+      char *full_path = exe_exists_in_dir(shell_paths[i], cmd_name, false);
+      if (full_path != NULL) {
         int j = 0;
         while (cmd->args[j] != NULL) {
           if (strcmp(cmd->args[j], ">") == 0) {
             if (cmd->args[j + 1] != NULL && cmd->args[j + 2] == NULL) {
               int fd = open(cmd->args[j + 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
+
               if (fd < 0) {
-                printerr(NULL);
-                free(full_path);
+                printerr();
                 exit(1);
               }
+
               dup2(fd, STDOUT_FILENO);
               dup2(fd, STDERR_FILENO);
+
               close(fd);
               cmd->args = realloc(cmd->args, (j + 1) * sizeof(char*));
               cmd->args[j] = NULL; 
               break;
             } else {
-              free(full_path);
-              printerr(NULL);
+              printerr();
               exit(1);
             }
           }
@@ -389,6 +362,8 @@ int exec_external_cmd (struct Command *cmd)
       }
       free(full_path);
     }
+
+    // check if cmd is all ampersands
     bool all_ampersands = true;
     for (int k = 0; cmd_name[k] != '\0'; k++) {
       if (cmd_name[k] != '&') {
@@ -397,18 +372,15 @@ int exec_external_cmd (struct Command *cmd)
       }
     }
     if (!all_ampersands) {
-      printerr(NULL);
+      printerr();
     }
     exit(1);
   }
   return 1;
 }
 
-void printerr(char *msg) {
+void printerr() {
+  // pulled code from part 2.4 of shell project document
   char emsg[30] = "An error has occurred\n";
-  if (msg == NULL) {
-    write(STDERR_FILENO, emsg, strlen(emsg));
-  } else {
-    write(STDERR_FILENO, msg, strlen(msg));
-  }
+  write(STDERR_FILENO, emsg, strlen(emsg));
 }

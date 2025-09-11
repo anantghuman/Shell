@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -8,6 +7,7 @@
 #include "util.h"
 
 void printNiceTry(int signo) {
+  // pulled code from part 1.2 of shell project instructions
   const int STDOUT = 1;
   ssize_t bytes;
   bytes = write(STDOUT, "Nice try.\n", 10);
@@ -17,6 +17,7 @@ void printNiceTry(int signo) {
 }
 
 void printExiting(int signo) {
+  // pulled code from part 1.2 of shell project instructions
   const int STDOUT = 1;
   ssize_t bytes;
   bytes = write(STDOUT, "exiting.\n", 9);
@@ -74,8 +75,3 @@ int main(int argc, char **argv)
     nanosleep(&time, NULL);
   }
 }
-
-
-
-
-
