@@ -1,0 +1,31 @@
+2025-09-11 15:59:42 -0500 0ea6bbc by alexwang, finished cleaning up logic
+2025-09-11 15:20:27 -0500 9c3ad07 by anantghuman, fixing previous push, forgot to push some stuff
+2025-09-11 15:11:14 -0500 92f69a1 by anantghuman, fixed error 11 and error 26
+2025-09-10 21:36:03 -0500 1388c43 by anantghuman, fixed mem leaks for 27-30
+2025-09-10 21:06:26 -0500 ab8fff0 by alexwang, mem leak fixed tc 4 on asan
+2025-09-10 20:30:12 -0500 511116f by anantghuman, mem leak fixes
+2025-09-10 19:57:27 -0500 dcd44f0 by alexwang, worked through memory leaks with make asan
+2025-09-10 19:23:14 -0500 6c96e90 by anantghuman, started working on testcase 32 :(
+2025-09-10 18:49:56 -0500 cf6cedb by alexwang, more work on 3.3, only failing 26 29 32
+2025-09-10 18:05:25 -0500 4383a66 by anantghuman, more work on concurrency
+2025-09-10 17:31:17 -0500 9577590 by alexwang, worked on 3.3
+2025-09-10 16:43:55 -0500 428bee8 by anantghuman, passing till testcase 25
+2025-09-09 21:40:31 -0500 3652270 by alexwang, qol
+2025-09-09 21:31:16 -0500 385b5df by anantghuman, fixed test 14 (angry face)
+2025-09-09 20:58:46 -0500 047b009 by alexwang, up to testcase 13 working pt2
+2025-09-09 20:27:12 -0500 5ee5291 by anantghuman, fixed problem 10 and 11
+2025-09-09 19:51:23 -0500 47b02d6 by alexwang, passed first 6 test cases of pt2
+2025-09-08 17:13:54 -0500 dec98ee by anantghuman, tested path and cd both work
+2025-09-08 16:45:40 -0500 05cc08f by alexwang, worked on debugging, parse_command working, fix segfaults
+2025-09-08 16:06:16 -0500 09743ea by anantghuman, worked on executing for path and fixed issues in exit
+2025-09-07 19:18:52 -0500 1286e11 by alexwang, fixed char** stuff
+2025-09-07 19:09:25 -0500 d5abffd by anantghuman, reworked and brainstormed parse command and tokens to meet requirements
+2025-09-07 18:22:04 -0500 39b5631 by alexwang, worked on try_exec_builtin
+2025-09-07 17:49:56 -0500 b809642 by anantghuman, started working on part 2
+2025-09-06 17:53:57 -0500 f9b373c by alexwang, finished part 1
+2025-09-06 17:22:57 -0500 e2887af by anantghuman, started working on shell design and handle.c
+2025-09-06 16:33:13 -0500 8ce26cc by alexwang, FINISHED FIB
+2025-09-06 15:51:26 -0500 1aae40e by anantghuman, more work on fib.c
+2025-09-05 18:22:21 -0500 4f56d34 by alexwang, more dev on fib
+2025-09-05 17:45:43 -0500 b6fb306 by anantghuman, started working on fib.c
+2025-09-04 22:44:09 -0500 6ee7bed by alexwang, initial commit
