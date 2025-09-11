@@ -76,7 +76,6 @@ function check_clean_exit() {
           # would happen if we could do signal passthrough from grandchildren,
           # even though dying with SIGUSR1 would give more information.
           # die 10 # Die with SIGUSR1
-          echo "Killing test process to ensure no false negatives."
           die 6 # Die with SIGABRT
         fi
     done

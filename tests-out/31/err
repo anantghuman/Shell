@@ -4798,22 +4798,3 @@ ls: cannot access 'a': No such file or directory
 ls: cannot access 'a': No such file or directory
 ls: cannot access 'a': No such file or directory
 ls: cannot access 'a': No such file or directory
-
-=================================================================
-==1690706==ERROR: LeakSanitizer: detected memory leaks
-
-Direct leak of 16 byte(s) in 1 object(s) allocated from:
-    #0 0x7fcab8f22808 in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:144
-    #1 0x56049a6018a8 in create_cmd_chain /u/alexwang/Documents/cs439/shell_project/utcsh.c:136
-    #2 0x56049a602a34 in eval /u/alexwang/Documents/cs439/shell_project/utcsh.c:232
-    #3 0x56049a60176c in main /u/alexwang/Documents/cs439/shell_project/utcsh.c:122
-    #4 0x7fcab82da082 in __libc_start_main ../csu/libc-start.c:308
-
-Indirect leak of 38416 byte(s) in 1 object(s) allocated from:
-    #0 0x7fcab8f22808 in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:144
-    #1 0x56049a601ab4 in create_cmd_chain /u/alexwang/Documents/cs439/shell_project/utcsh.c:143
-    #2 0x56049a602a34 in eval /u/alexwang/Documents/cs439/shell_project/utcsh.c:232
-    #3 0x56049a60176c in main /u/alexwang/Documents/cs439/shell_project/utcsh.c:122
-    #4 0x7fcab82da082 in __libc_start_main ../csu/libc-start.c:308
-
-SUMMARY: AddressSanitizer: 38432 byte(s) leaked in 2 allocation(s).

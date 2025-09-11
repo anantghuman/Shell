@@ -1,5 +1,5 @@
 path tests/test-utils /bin
-p6.sh > /tmp/alexwang/utcsh/output25
-cat /tmp/alexwang/utcsh/output25
-rm -f /tmp/alexwang/utcsh/output25
+p6.sh > /tmp/anantg/utcsh/output25
+cat /tmp/anantg/utcsh/output25
+rm -f /tmp/anantg/utcsh/output25
 exit

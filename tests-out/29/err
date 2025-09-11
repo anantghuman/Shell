@@ -1,26 +1,12 @@
 
 =================================================================
-==1690689==ERROR: LeakSanitizer: detected memory leaks
-
-Direct leak of 16 byte(s) in 1 object(s) allocated from:
-    #0 0x7fc16fd80808 in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:144
-    #1 0x562504eb28a8 in create_cmd_chain /u/alexwang/Documents/cs439/shell_project/utcsh.c:136
-    #2 0x562504eb3a34 in eval /u/alexwang/Documents/cs439/shell_project/utcsh.c:232
-    #3 0x562504eb276c in main /u/alexwang/Documents/cs439/shell_project/utcsh.c:122
-    #4 0x7fc16f138082 in __libc_start_main ../csu/libc-start.c:308
+==2011391==ERROR: LeakSanitizer: detected memory leaks
 
 Direct leak of 8 byte(s) in 1 object(s) allocated from:
-    #0 0x7fc16fd80808 in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:144
-    #1 0x562504eb3086 in create_cmd_chain /u/alexwang/Documents/cs439/shell_project/utcsh.c:162
-    #2 0x562504eb3a34 in eval /u/alexwang/Documents/cs439/shell_project/utcsh.c:232
-    #3 0x562504eb276c in main /u/alexwang/Documents/cs439/shell_project/utcsh.c:122
-    #4 0x7fc16f138082 in __libc_start_main ../csu/libc-start.c:308
+    #0 0x7f409d27a808 in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:144
+    #1 0x5623425e6094 in create_cmd_chain /u/anantg/shell/utcsh.c:163
+    #2 0x5623425e6a42 in eval /u/anantg/shell/utcsh.c:233
+    #3 0x5623425e577d in main /u/anantg/shell/utcsh.c:123
+    #4 0x7f409c632082 in __libc_start_main ../csu/libc-start.c:308
 
-Indirect leak of 32 byte(s) in 1 object(s) allocated from:
-    #0 0x7fc16fd80808 in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:144
-    #1 0x562504eb2ab4 in create_cmd_chain /u/alexwang/Documents/cs439/shell_project/utcsh.c:143
-    #2 0x562504eb3a34 in eval /u/alexwang/Documents/cs439/shell_project/utcsh.c:232
-    #3 0x562504eb276c in main /u/alexwang/Documents/cs439/shell_project/utcsh.c:122
-    #4 0x7fc16f138082 in __libc_start_main ../csu/libc-start.c:308
-
-SUMMARY: AddressSanitizer: 56 byte(s) leaked in 3 allocation(s).
+SUMMARY: AddressSanitizer: 8 byte(s) leaked in 1 allocation(s).

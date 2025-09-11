@@ -1,13 +1,1 @@
 An error has occurred
-
-=================================================================
-==1690653==ERROR: LeakSanitizer: detected memory leaks
-
-Direct leak of 8 byte(s) in 1 object(s) allocated from:
-    #0 0x7faa8cfbe808 in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:144
-    #1 0x561cabce15e5 in exec_external_cmd /u/alexwang/Documents/cs439/shell_project/utcsh.c:330
-    #2 0x561cabce0ae5 in eval /u/alexwang/Documents/cs439/shell_project/utcsh.c:242
-    #3 0x561cabcdf76c in main /u/alexwang/Documents/cs439/shell_project/utcsh.c:122
-    #4 0x7faa8c376082 in __libc_start_main ../csu/libc-start.c:308
-
-SUMMARY: AddressSanitizer: 8 byte(s) leaked in 1 allocation(s).

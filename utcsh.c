@@ -116,6 +116,7 @@ int main (int argc, char **argv)
 
       struct Command cmd = parse_command(tokens);
       if (cmd.args == NULL) {
+        free(tokens);
         continue;
       }
 
@@ -126,7 +127,7 @@ int main (int argc, char **argv)
         exit(err);
       }
     }
-    free(lineptr);
+  free(lineptr);
   return 0;
 }
 
@@ -241,6 +242,12 @@ int eval (struct Command *cmd)
       external = true;
       int e = exec_external_cmd(&cmd_chain->cmd);
       if (e == 0) {
+        while (head != NULL) {
+          free(head->cmd.args);
+          cmd_node *next = head->next;
+          free(head);
+          head = next;
+        }
         return e;
       }
     } else if (err == -1) {
@@ -255,6 +262,12 @@ int eval (struct Command *cmd)
     cmd_chain = cmd_chain->next;
   }
   if (external == false) {
+    while (head != NULL) {
+          free(head->cmd.args);
+          cmd_node *next = head->next;
+          free(head);
+          head = next;
+        }
     return 1;
   }
   for (int j = 0; j < i; j++) {
@@ -294,6 +307,7 @@ int try_exec_builtin (struct Command *cmd)
     if (err == -1) {
       printerr(NULL);
     }
+    free(path);
     return 1;
   } else if (strcmp(cmd_name, "path") == 0) {
     int err = set_shell_path(&cmd->args[1]);
@@ -340,13 +354,16 @@ int exec_external_cmd (struct Command *cmd)
               int fd = open(cmd->args[j + 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
               if (fd < 0) {
                 printerr(NULL);
+                free(full_path);
                 return 1;
               }
               dup2(fd, STDOUT_FILENO);
               dup2(fd, STDERR_FILENO);
               cmd->args = realloc(cmd->args, (j + 1) * sizeof(char*));
               cmd->args[j] = NULL; 
+              break;
             } else {
+              free(full_path);
               printerr(NULL);
               return 1;
             }
