@@ -1,3 +1,0 @@
-./tests/test-utils/run-evil-boom-box.sh: line 134: 1781552 Killed                  /bin/sleep 10
-==1781561==ASan runtime does not come first in initial library list; you should either link runtime to your application or manually preload it with LD_PRELOAD.
-==1781569==ASan runtime does not come first in initial library list; you should either link runtime to your application or manually preload it with LD_PRELOAD.
