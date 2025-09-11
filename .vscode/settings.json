@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "string": "c",
+        "istream": "c",
+        "streambuf": "c"
+    }
+}

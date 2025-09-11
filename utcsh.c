@@ -64,6 +64,13 @@ int main (int argc, char **argv)
     exit(1);
   }
 
+  int c = fgetc(f);
+  if (c == EOF) {
+    printerr("An error has occurred\n");
+    exit(1);
+  }
+  ungetc(c, f);
+
   while (true)
     {
       if (f == stdin) {
@@ -144,13 +151,22 @@ cmd_node* create_cmd_chain(struct Command cmd) {
     }
     head->cmd.args = malloc((i + 1) * sizeof(char*));
     head->cmd.args[i] = NULL;
+    for (int k = 0; k < i; k++) {
+        head->cmd.args[k] = cmd.args[k];
+    }
+
     head->next = NULL;
 
     i = 0;
     cmd_node *curr_node = head;
     while (cmd.args[i] != NULL) {
-        if (cmd.args[i][0] == '&') {
+        if (strcmp(cmd.args[i], "&") == 0) {
             i++;
+
+            if (cmd.args[i] == NULL || strcmp(cmd.args[i], "&") == 0) {
+              continue;
+            }
+
             curr_node->next = malloc(sizeof(cmd_node));
             curr_node = curr_node->next;
 
@@ -289,7 +305,6 @@ int eval (struct Command *cmd)
  */
 int try_exec_builtin (struct Command *cmd)
 {
-  // (void) cmd;
   char *cmd_name = cmd->args[0];
   if (cmd->args[0] == NULL) {
     return 1;
@@ -358,6 +373,7 @@ int exec_external_cmd (struct Command *cmd)
               }
               dup2(fd, STDOUT_FILENO);
               dup2(fd, STDERR_FILENO);
+              close(fd);
               cmd->args = realloc(cmd->args, (j + 1) * sizeof(char*));
               cmd->args[j] = NULL; 
               break;
@@ -373,8 +389,17 @@ int exec_external_cmd (struct Command *cmd)
       }
       free(full_path);
     }
-    printerr(NULL);
-    return 0;
+    bool all_ampersands = true;
+    for (int k = 0; cmd_name[k] != '\0'; k++) {
+      if (cmd_name[k] != '&') {
+        all_ampersands = false;
+        break;
+      }
+    }
+    if (!all_ampersands) {
+      printerr(NULL);
+    }
+    return(1);
   }
   return 1;
 }
