@@ -1,4 +1,3 @@
-#include <ctype.h>
 #include <errno.h>
 #include <signal.h>
 #include <stdio.h>
@@ -44,42 +43,54 @@ int main (int argc, char **argv)
   return 0;
 }
 
-static void doFibHelper(int n, int doPrint) {
-  if (n == 0) {
-    if (doPrint == 1) {
-      printf("0\n");
+static void doFibHelper (int n, int doPrint)
+{
+  if (n == 0)
+    {
+      if (doPrint == 1)
+        {
+          printf ("0\n");
+        }
+      exit (0);
     }
-    exit(0);
-  }
-  if (n == 1) {
-    if (doPrint == 1) {
-      printf("1\n");
+  if (n == 1)
+    {
+      if (doPrint == 1)
+        {
+          printf ("1\n");
+        }
+      exit (1);
     }
-    exit(1);
-}
 
   int left = 0, right = 0;
-  pid_t pid1 = fork();
+  pid_t pid1 = fork ();
 
-  if (pid1 == 0) {
-    doFibHelper(n - 1, 0);
-  } else {
-    waitpid(pid1, &left, 0);
-    left = WEXITSTATUS(left);
-  }
+  if (pid1 == 0)
+    {
+      doFibHelper (n - 1, 0);
+    }
+  else
+    {
+      waitpid (pid1, &left, 0);
+      left = WEXITSTATUS (left);
+    }
 
-  pid_t pid2 = fork();
-  if (pid2 == 0) {
-    doFibHelper(n - 2, 0);
-  } else {
-    waitpid(pid2, &right, 0);
-    right = WEXITSTATUS(right);
-  }
+  pid_t pid2 = fork ();
+  if (pid2 == 0)
+    {
+      doFibHelper (n - 2, 0);
+    }
+  else
+    {
+      waitpid (pid2, &right, 0);
+      right = WEXITSTATUS (right);
+    }
 
-  if (doPrint == 1) {
-    printf("%d\n", left + right);
-  }
-  exit(left + right);
+  if (doPrint == 1)
+    {
+      printf ("%d\n", left + right);
+    }
+  exit (left + right);
 }
 
 /*
@@ -91,14 +102,7 @@ static void doFibHelper(int n, int doPrint) {
  * doFib() exactly once.
  */
 
- /*
- n = 0: 1
- n = 1: 1
- fork()
- exec(n-1)
- exec(n-2)
- return wait(pid1 + pid2)
- */
-static void doFib (int n, int doPrint) {
-  doFibHelper(n, doPrint);
+static void doFib (int n, int doPrint)
+{
+  doFibHelper (n, doPrint);
 }

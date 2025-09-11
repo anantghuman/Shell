@@ -13,8 +13,8 @@
 // Macro which executes an equivalent printf only if the `verbose` variable is
 // set to true. Macros probably only works in GCC due to the ## construct
 // (see https://stackoverflow.com/a/20639864 for details)
-#define VERBOSE_LOG(x, ...)                                                    \
-  if (verbose)                                                                 \
+#define VERBOSE_LOG(x, ...)                                                   \
+  if (verbose)                                                                \
   printf ((x), ##__VA_ARGS__)
 
 extern char shell_paths[MAX_ENTRIES_IN_SHELLPATH][MAX_CHARS_PER_CMDLINE];
@@ -130,22 +130,22 @@ char *exe_exists_in_dir (const char *dirname, const char *filename,
                            buf);
               switch (errno)
                 {
-                  case EACCES:
-                  case ENOENT:
-                  case ENOTDIR:
-                    errno = 0;
-                    break; /* These are benign faults */
-                  case EIO:
-                  case EINVAL:
-                  case EFAULT:
-                  case ENOMEM:
-                  case ETXTBSY:
-                  case EROFS:
-                  case ENAMETOOLONG:
-                  case ELOOP:
-                    maybe_print_error (); /* User might want to know about these
-                                           */
-                    errno = 0;
+                case EACCES:
+                case ENOENT:
+                case ENOTDIR:
+                  errno = 0;
+                  break; /* These are benign faults */
+                case EIO:
+                case EINVAL:
+                case EFAULT:
+                case ENOMEM:
+                case ETXTBSY:
+                case EROFS:
+                case ENAMETOOLONG:
+                case ELOOP:
+                  maybe_print_error (); /* User might want to know about these
+                                         */
+                  errno = 0;
                 }
               free (buf);
             }
@@ -165,5 +165,3 @@ char *exe_exists_in_dir (const char *dirname, const char *filename,
   VERBOSE_LOG ("Did not find file %s in directory %s\n", filename, dirname);
   return NULL;
 }
-
-
