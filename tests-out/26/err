@@ -1,15 +1,15 @@
 AddressSanitizer:DEADLYSIGNAL
 =================================================================
-==2011310==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x7f3d9fd6489c bp 0x7ffef08f2530 sp 0x7ffef08f1c90 T0)
-==2011310==The signal is caused by a READ memory access.
-==2011310==Hint: address points to the zero page.
-    #0 0x7f3d9fd6489b in __interceptor_strcmp ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors.inc:420
-    #1 0x559936a6b115 in try_exec_builtin /u/anantg/shell/utcsh.c:298
-    #2 0x559936a6aab5 in eval /u/anantg/shell/utcsh.c:240
-    #3 0x559936a6977d in main /u/anantg/shell/utcsh.c:123
-    #4 0x7f3d9f153082 in __libc_start_main ../csu/libc-start.c:308
-    #5 0x559936a6872d in _start (/u/anantg/shell/utcsh+0x972d)
+==1696190==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x7f7abd75689c bp 0x7ffe13ed21c0 sp 0x7ffe13ed1920 T0)
+==1696190==The signal is caused by a READ memory access.
+==1696190==Hint: address points to the zero page.
+    #0 0x7f7abd75689b in __interceptor_strcmp ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors.inc:420
+    #1 0x55ce11cbc182 in try_exec_builtin /u/alexwang/Documents/cs439/shell_project/utcsh.c:298
+    #2 0x55ce11cbbb22 in eval /u/alexwang/Documents/cs439/shell_project/utcsh.c:240
+    #3 0x55ce11cba76a in main /u/alexwang/Documents/cs439/shell_project/utcsh.c:123
+    #4 0x7f7abcb45082 in __libc_start_main ../csu/libc-start.c:308
+    #5 0x55ce11cb972d in _start (/u/alexwang/Documents/cs439/shell_project/utcsh+0x972d)
 
 AddressSanitizer can not provide additional info.
 SUMMARY: AddressSanitizer: SEGV ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors.inc:420 in __interceptor_strcmp
-==2011310==ABORTING
+==1696190==ABORTING

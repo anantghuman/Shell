@@ -1,12 +1,12 @@
 
 =================================================================
-==2011345==ERROR: LeakSanitizer: detected memory leaks
+==1696201==ERROR: LeakSanitizer: detected memory leaks
 
 Direct leak of 16 byte(s) in 2 object(s) allocated from:
-    #0 0x7f8076f19808 in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:144
-    #1 0x55b6a277a094 in create_cmd_chain /u/anantg/shell/utcsh.c:163
-    #2 0x55b6a277aa42 in eval /u/anantg/shell/utcsh.c:233
-    #3 0x55b6a277977d in main /u/anantg/shell/utcsh.c:123
-    #4 0x7f80762d1082 in __libc_start_main ../csu/libc-start.c:308
+    #0 0x7f475c2ce808 in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:144
+    #1 0x55cc5d39f081 in create_cmd_chain /u/alexwang/Documents/cs439/shell_project/utcsh.c:163
+    #2 0x55cc5d39faaf in eval /u/alexwang/Documents/cs439/shell_project/utcsh.c:233
+    #3 0x55cc5d39e76a in main /u/alexwang/Documents/cs439/shell_project/utcsh.c:123
+    #4 0x7f475b686082 in __libc_start_main ../csu/libc-start.c:308
 
 SUMMARY: AddressSanitizer: 16 byte(s) leaked in 2 allocation(s).

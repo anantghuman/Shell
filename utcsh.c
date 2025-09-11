@@ -64,7 +64,7 @@ int main (int argc, char **argv)
     exit(1);
   }
 
-  while (1)
+  while (true)
     {
       if (f == stdin) {
         printf ("%s", prompt);
@@ -92,7 +92,7 @@ int main (int argc, char **argv)
       }
 
       int num_args = 0;
-      for (int i = 0; i < strlen(lineptr); i++) {
+      for (size_t i = 0; i < strlen(lineptr); i++) {
         if (isspace(lineptr[i])) {
           while (isspace(lineptr[i])) {
             if (lineptr[i] == '\t') {
@@ -210,7 +210,7 @@ struct Command parse_command (char **tokens)
   if (strcmp(cmd_name, "exit") == 0) {
     dummy.args = tokens;
   } else if (strcmp(cmd_name, "cd") == 0) {
-    if (tokens[1] && tokens[2] != NULL) {
+    if (tokens[1] == NULL || (tokens[1] != NULL && tokens[2] != NULL)) {
       printerr(NULL);
       dummy.args = NULL;
       return dummy;
@@ -383,8 +383,8 @@ int exec_external_cmd (struct Command *cmd)
 void printerr(char *msg) {
   char emsg[30] = "An error has occurred\n";
   if (msg == NULL) {
-    int nbytes_written = write(STDERR_FILENO, emsg, strlen(emsg));
+    write(STDERR_FILENO, emsg, strlen(emsg));
   } else {
-    int nbytes_written = write(STDERR_FILENO, msg, strlen(msg));
+    write(STDERR_FILENO, msg, strlen(msg));
   }
 }

@@ -1,0 +1,48 @@
+=================================================================
+==1696117==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x60c0000000b8 at pc 0x7feb46aa5a7d bp 0x7ffd970697b0 sp 0x7ffd97068f58
+READ of size 121 at 0x60c0000000b8 thread T0
+    #0 0x7feb46aa5a7c in __interceptor_strlen ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors.inc:354
+    #1 0x55af85558b20 in main /u/alexwang/Documents/cs439/shell_project/utcsh.c:75
+    #2 0x7feb45f03082 in __libc_start_main ../csu/libc-start.c:308
+    #3 0x55af8555872d in _start (/u/alexwang/Documents/cs439/shell_project/utcsh+0x972d)
+
+0x60c0000000b8 is located 0 bytes to the right of 120-byte region [0x60c000000040,0x60c0000000b8)
+allocated by thread T0 here:
+    #0 0x7feb46b4b808 in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:144
+    #1 0x7feb45f62543 in _IO_getdelim /build/glibc-B3wQXB/glibc-2.31/libio/iogetdelim.c:62
+    #2 0xf7bddf6ca5b5a9ff  (<unknown module>)
+
+SUMMARY: AddressSanitizer: heap-buffer-overflow ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors.inc:354 in __interceptor_strlen
+Shadow bytes around the buggy address:
+  0x0c187fff7fc0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0c187fff7fd0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0c187fff7fe0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0c187fff7ff0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0c187fff8000: fa fa fa fa fa fa fa fa 00 00 00 00 00 00 00 00
+=>0x0c187fff8010: 00 00 00 00 00 00 00[fa]fa fa fa fa fa fa fa fa
+  0x0c187fff8020: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x0c187fff8030: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x0c187fff8040: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x0c187fff8050: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x0c187fff8060: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+  Shadow gap:              cc
+==1696117==ABORTING
