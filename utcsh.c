@@ -129,7 +129,7 @@ int main (int argc, char **argv)
 }
 
 /** Turn a single command with possible '&' into a linked list of commands
- * 
+ *
  * Checks the arguments of the command for any '&' characters. If found, splits
  * the command into multiple commands at the '&' characters and returns a linked
  * list of commands. If no '&' characters are found, returns a linked list with
@@ -140,7 +140,7 @@ cmd_node *create_cmd_chain (struct Command cmd)
 {
   int index = 0;
   int curr_arg = 0;
-  cmd_node *head = malloc (sizeof (cmd_node));
+  cmd_node *head = calloc (1, sizeof (cmd_node));
   head->cmd.args = NULL;
   // anant driving here
   while (cmd.args[index] != NULL)
@@ -151,7 +151,7 @@ cmd_node *create_cmd_chain (struct Command cmd)
         }
       index++;
     }
-  head->cmd.args = malloc ((index + 1) * sizeof (char *));
+  head->cmd.args = calloc (1, (index + 1) * sizeof (char *));
   head->cmd.args[index] = NULL;
   for (int k = 0; k < index; k++)
     {
@@ -174,7 +174,7 @@ cmd_node *create_cmd_chain (struct Command cmd)
               continue;
             }
 
-          curr_node->next = malloc (sizeof (cmd_node));
+          curr_node->next = calloc (1, sizeof (cmd_node));
           curr_node = curr_node->next;
           // anant and alex driving here
           int num_chars_til_amp = i;
@@ -188,7 +188,7 @@ cmd_node *create_cmd_chain (struct Command cmd)
             }
           // alex driving here
           curr_node->cmd.args
-              = malloc ((num_chars_til_amp - i + 1) * sizeof (char *));
+              = calloc (1, (num_chars_til_amp - i + 1) * sizeof (char *));
           curr_node->cmd.args[num_chars_til_amp - i] = NULL;
           curr_node->next = NULL;
           curr_arg = 0;
@@ -226,7 +226,7 @@ char **tokenize_command_line (char *lineptr)
       num_args++;
     }
 
-  char **tokens = malloc ((num_args + 2) * sizeof (char *));
+  char **tokens = calloc (1, (num_args + 2) * sizeof (char *));
   char *token = strtok (lineptr, " ");
   int index = 0;
   while (index <= num_args)

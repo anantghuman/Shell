@@ -39,11 +39,11 @@ using the Linux command wc.  (Note that rtf files are NOT text files.)
 ################
 TEAM INFO
 ################
-Name: Alexander 
-EID:
-CS login:
-Email:
-Unique Number:
+Name: Alexander Wang
+EID: aw42465
+CS login: alexwang
+Email: alexwang@utexas.edu
+Unique Number: 54935
 
 
 Name2: Anant Ghuman
@@ -87,7 +87,8 @@ Questions regarding Part 0
     with 0 (the original process) and incrementing for
     each child process.
 
-    There are 14 children being made when doFib() begins with an input of 5. The return value of each of the processes starting with the original process are:
+    There are 14 children being made when doFib() begins with an input of 5.
+    The return value of each of the processes starting with the original process are:
 
     0: Fib(5) → 5
     1: Fib(4) → 3
@@ -108,7 +109,9 @@ Questions regarding Part 0
 (2) Explain how you communicated the return value of the 
     child to the parent. What feature of wait() did you use?
 
-    We used the exit() command to return the value from the child to the parent. We then used waitpid to recieve the child's exit status and WEXITSTATUS() to get the value that the child originally passed to exit().
+    We used the exit() command to return the value from the child to the parent.
+    We then used waitpid to recieve the child's exit status and
+    WEXITSTATUS() to get the value that the child originally passed to exit().
 
 ################
 Questions regarding Part 1
@@ -116,7 +119,15 @@ Questions regarding Part 1
 (1) In the provided utility function signal_action(), what does the call to
   sigaction() do?  Why was sigaction() used instead of signal()?
 
-    The call to sigaction changes what the process does when the given signal is recieved to the handler that is passed in. In part 1, we use a function* as the handler. Sigaction() was used instead of signal() because it does not allow the signal being changed to be recieved while the handler is being executed. Sigaction() also allows you to keep track of the previous handler in case it needs to be reset or used elsewhere. Lastly, it allows flags to be set like SA_RESTART which makes certain system calls automatically restart if they are interrupted by the signal while the handler is running.
+    The call to sigaction changes what the process does when the given
+    signal is recieved to the handler that is passed in. In part 1, we
+    use a function* as the handler. Sigaction() was used instead of
+    signal() because it does not allow the signal being changed to be
+    recieved while the handler is being executed. Sigaction() also
+    allows you to keep track of the previous handler in case it needs
+    to be reset or used elsewhere. Lastly, it allows flags to be set
+    like SA_RESTART which makes certain system calls automatically
+    restart if they are interrupted by the signal while the handler is running.
 
 
 ################
@@ -131,14 +142,21 @@ Questions regarding Part 2
     Note that you do not need to include concurrent commands in your answer. 
     Part 2 does not include this advanced shell feature.
 
-    We used a struct command containing only a char** with all of the parsed tokens. The first char* pointed to a char array containing the command/executable name. The following char pointers in the command contained either the command/executable arguments if necessary.
+    We used a struct command containing only a char** with all of the
+    parsed tokens. The first char* pointed to a char array containing
+    the command/executable name. The following char pointers in the
+    command contained either the command/executable arguments if necessary.
 
 
 (2) An invalid script file is one which does not contain anything (i.e. 
     a size zero file). How did you detect and handle this condition?  
     Describe one other (correct) design that you could have used.
 
-    The way that we handled this was to obtain the input file and check if the first character was an EOF. If not, the first character would be put back. Another correct way to handle this would be to 
+    The way that we handled this was to obtain the input file and check
+    if the first character was an EOF. If not, the first character
+    would be put back. Another correct way to handle this would be to
+    check the file size to determine if it is an empty file. If it is,
+    then exit early.
 
 
 ################
@@ -148,7 +166,13 @@ Questions regarding Part 3
     commands are executed concurrently instead of one after 
     another.
 
-    The way that our implementation ensures that concurrent commands are executed concurrently is by first running all commands. If the were expected to be ran concurrently, we call wait() once per command. By doing it this way, we can ensure that the parent process only begins to wait for them after they all begin running concurrently. We only consider this case if the commands are expected to be run concurrently.
+    The way that our implementation ensures that concurrent commands are
+    executed concurrently is by first running all commands. If the were
+    expected to be ran concurrently, we call wait() once per command.
+    By doing it this way, we can ensure that the parent process only
+    begins to wait for them after they all begin running concurrently.
+    We only consider this case if the commands are expected to be run
+    concurrently.
 
 (2) One potential strategy for redirecting output is to run 
     the following code:
@@ -170,4 +194,11 @@ Questions regarding Part 3
   conjunction with fork-and-exec, and why the dup2() 
   technique does not suffer the same issue.
 
-    This would cause issues because this
+    This would cause issues because "output" is just a pointer to
+    a FILE struct, so when the process gets overwritten when exec() is
+    called, the output pointer gets destroyed and set back to
+    its original file descriptors (stdout and stderr) instead of the
+    file that we want to write to. The reason dup2() works is because 
+    it uses kernel-level output redirection, so the file descriptors
+    are inherited even when fork() and exec() are called.
+
