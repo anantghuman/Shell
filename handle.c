@@ -1,4 +1,5 @@
 #include "util.h"
+#include "sig_util.h"
 #include <assert.h>
 #include <signal.h>
 #include <stdio.h>
@@ -35,25 +36,9 @@ signal handler () {
 */
 void init_sig ()
 {
-  struct sigaction sa;
-  sa.sa_handler = &printNiceTry;
-  sigemptyset (&sa.sa_mask);
-  sa.sa_flags = 0;
-  if (sigaction (SIGINT, &sa, NULL) == -1)
-    {
-      printf ("sigaction error");
-      return;
-    }
 
-  struct sigaction sa2;
-  sa2.sa_handler = &printExiting;
-  sigemptyset (&sa2.sa_mask);
-  sa2.sa_flags = 0;
-  if (sigaction (SIGUSR1, &sa2, NULL) == -1)
-    {
-      printf ("sigaction error");
-      return;
-    }
+  signal_action(SIGINT, &printNiceTry);
+  signal_action(SIGUSR1, &printExiting);
 }
 
 /*

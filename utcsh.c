@@ -124,6 +124,13 @@ int main (int argc, char **argv)
   return 0;
 }
 
+/** Turn a single command with possible '&' into a linked list of commands
+ * 
+ * Checks the arguments of the command for any '&' characters. If found, splits
+ * the command into multiple commands at the '&' characters and returns a linked
+ * list of commands. If no '&' characters are found, returns a linked list with
+ * a single command.
+*/
 cmd_node *create_cmd_chain (struct Command cmd)
 {
   int index = 0;
@@ -259,6 +266,10 @@ struct Command parse_command (char **tokens)
   return dummy;
 }
 
+/* Free a linked list of commands
+ *
+ * Frees all memory associated with a linked list of commands
+ */
 void free_cmd_chain (cmd_node *head)
 {
   cmd_node *h = head;
@@ -445,6 +456,7 @@ int exec_external_cmd (struct Command *cmd)
   return 1;
 }
 
+/* Print an error message to stderr */
 void printerr ()
 {
   // pulled code from part 2.4 of shell project document
