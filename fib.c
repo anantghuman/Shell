@@ -90,9 +90,10 @@ static void doFibHelper (int n, int doPrint)
     {
       printf ("%d\n", left + right);
     }
-  else {
-    exit (left + right);
-  }
+  else
+    {
+      exit (left + right);
+    }
 }
 
 /*
