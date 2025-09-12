@@ -1,7 +1,8 @@
 /*
   utcsh - The UTCS Shell
 
-  <Put your name and CS login ID here>
+  Name: Anant Ghuman CS Login: anantg
+  Name: Alexander Wang CS Login: alexwang
 */
 
 /* Read the additional functions from util.h. They may be beneficial to you
@@ -53,10 +54,12 @@ void printerr ();
 int main (int argc, char **argv)
 {
   set_shell_path (default_shell_path);
+  // anant driving here
   char *lineptr = NULL;
   size_t n = 0;
 
   FILE *f;
+  // alex driving here
   if (argc == 2)
     {
       f = fopen (argv[1], "r");
@@ -71,6 +74,7 @@ int main (int argc, char **argv)
       exit (1);
     }
 
+  // anant driving here
   int c = fgetc (f);
   if (c == EOF)
     {
@@ -85,7 +89,7 @@ int main (int argc, char **argv)
         {
           printf ("%s", prompt);
         }
-
+      // anant driving here
       if (getline (&lineptr, &n, f) == -1)
         {
           if (strlen (lineptr) == 0)
@@ -106,12 +110,12 @@ int main (int argc, char **argv)
       char **tokens = tokenize_command_line (lineptr);
 
       struct Command cmd = parse_command (tokens);
+      // alex driving here
       if (cmd.args == NULL)
         {
           free (tokens);
           continue;
         }
-
       int err = eval (&cmd);
       free (tokens);
       if (err == 0)
@@ -131,12 +135,14 @@ int main (int argc, char **argv)
  * list of commands. If no '&' characters are found, returns a linked list with
  * a single command.
 */
+// alex driving here
 cmd_node *create_cmd_chain (struct Command cmd)
 {
   int index = 0;
   int curr_arg = 0;
   cmd_node *head = malloc (sizeof (cmd_node));
   head->cmd.args = NULL;
+  // anant driving here
   while (cmd.args[index] != NULL)
     {
       if (strcmp (cmd.args[index], "&") == 0)
@@ -154,6 +160,7 @@ cmd_node *create_cmd_chain (struct Command cmd)
 
   head->next = NULL;
 
+  // alex driving here
   int i = 0;
   cmd_node *curr_node = head;
   while (cmd.args[i] != NULL)
@@ -169,7 +176,7 @@ cmd_node *create_cmd_chain (struct Command cmd)
 
           curr_node->next = malloc (sizeof (cmd_node));
           curr_node = curr_node->next;
-
+          // anant and alex driving here
           int num_chars_til_amp = i;
           while (cmd.args[num_chars_til_amp] != NULL)
             {
@@ -179,6 +186,7 @@ cmd_node *create_cmd_chain (struct Command cmd)
                 }
               num_chars_til_amp++;
             }
+          // alex driving here
           curr_node->cmd.args
               = malloc ((num_chars_til_amp - i + 1) * sizeof (char *));
           curr_node->cmd.args[num_chars_til_amp - i] = NULL;
@@ -203,8 +211,10 @@ with your own implementation. */
  * much easier to process. First, you should figure out how many arguments you
  * have, then allocate a char** of sufficient size and fill it using strtok()
  */
+// alex driving here
 char **tokenize_command_line (char *lineptr)
 {
+  // anant driving here
   int num_args = 0;
   for (size_t i = 0; i < strlen (lineptr); i++)
     {
@@ -238,6 +248,7 @@ char **tokenize_command_line (char *lineptr)
  */
 struct Command parse_command (char **tokens)
 {
+  // anant driving here
   struct Command dummy = { .args = tokens };
   char *cmd_name = tokens[0];
   if (cmd_name == NULL)
@@ -245,6 +256,7 @@ struct Command parse_command (char **tokens)
       dummy.args = NULL;
       return dummy;
     }
+  // alex and anant driving here
   if (strcmp (cmd_name, "exit") == 0)
     {
       dummy.args = tokens;
@@ -270,6 +282,7 @@ struct Command parse_command (char **tokens)
  *
  * Frees all memory associated with a linked list of commands
  */
+// alex driving here
 void free_cmd_chain (cmd_node *head)
 {
   cmd_node *h = head;
@@ -289,7 +302,7 @@ void free_cmd_chain (cmd_node *head)
  */
 int eval (struct Command *cmd)
 {
-  // (void) cmd;
+  // alex and anant driving here
   cmd_node *head = create_cmd_chain (*cmd);
   cmd_node *cmd_chain = head;
 
@@ -298,6 +311,7 @@ int eval (struct Command *cmd)
   while (cmd_chain != NULL)
     {
       i++;
+      // alex driving here
       int builtin_err = try_exec_builtin (&cmd_chain->cmd);
       if (builtin_err == 0)
         {
@@ -317,6 +331,7 @@ int eval (struct Command *cmd)
       cmd_chain = cmd_chain->next;
     }
 
+  // anant driving here
   if (!external)
     {
       free_cmd_chain (head);
@@ -339,12 +354,14 @@ int eval (struct Command *cmd)
  */
 int try_exec_builtin (struct Command *cmd)
 {
+  // alex driving here
   char *cmd_name = cmd->args[0];
   if (cmd->args[0] == NULL)
     {
       return 1;
     }
 
+  // anant and alex driving here
   if (strcmp (cmd_name, "exit") == 0)
     {
       if (cmd->args[1] != NULL)
@@ -354,6 +371,7 @@ int try_exec_builtin (struct Command *cmd)
         }
       return -1;
     }
+  // alex driving here
   else if (strcmp (cmd_name, "cd") == 0)
     {
       int err = chdir (cmd->args[1]);
@@ -365,6 +383,7 @@ int try_exec_builtin (struct Command *cmd)
       free (path);
       return 1;
     }
+  // anant driving here
   else if (strcmp (cmd_name, "path") == 0)
     {
       int err = set_shell_path (&cmd->args[1]);
@@ -389,16 +408,20 @@ int exec_external_cmd (struct Command *cmd)
 
   if (pid == 0)
     {
+      // alex and anant driving here
       if (is_absolute_path (cmd_name))
         {
           execv (cmd_name, cmd->args);
         }
+      // anant driving here
       for (int i = 0; i < MAX_ENTRIES_IN_SHELLPATH; i++)
         {
+          // alex and anant driving here
           char *full_path
               = exe_exists_in_dir (shell_paths[i], cmd_name, false);
           if (full_path != NULL)
             {
+              // anant driving here
               int j = 0;
               while (cmd->args[j] != NULL)
                 {
@@ -414,11 +437,12 @@ int exec_external_cmd (struct Command *cmd)
                               printerr ();
                               exit (1);
                             }
-
+                          // alex and anant driving here
                           dup2 (fd, STDOUT_FILENO);
                           dup2 (fd, STDERR_FILENO);
 
                           close (fd);
+                          // anant driving here
                           cmd->args
                               = realloc (cmd->args, (j + 1) * sizeof (char *));
                           cmd->args[j] = NULL;
@@ -438,6 +462,7 @@ int exec_external_cmd (struct Command *cmd)
         }
 
       // check if cmd is all ampersands
+      // anant driving here
       bool all_ampersands = true;
       for (int k = 0; cmd_name[k] != '\0'; k++)
         {
@@ -457,6 +482,7 @@ int exec_external_cmd (struct Command *cmd)
 }
 
 /* Print an error message to stderr */
+// alex driving here
 void printerr ()
 {
   // pulled code from part 2.4 of shell project document

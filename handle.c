@@ -7,6 +7,7 @@
 #include <time.h>
 #include <unistd.h>
 
+// anant driving here
 void printNiceTry (int signo)
 {
   // pulled code from part 1.2 of shell project instructions
@@ -19,6 +20,7 @@ void printNiceTry (int signo)
     }
 }
 
+// alex driving here
 void printExiting (int signo)
 {
   // pulled code from part 1.2 of shell project instructions
@@ -36,7 +38,7 @@ signal handler () {
 */
 void init_sig ()
 {
-
+  // anant and alex driving here
   signal_action(SIGINT, &printNiceTry);
   signal_action(SIGUSR1, &printExiting);
 }
@@ -52,6 +54,7 @@ void init_sig ()
  */
 int main (int argc, char **argv)
 {
+  // anant driving here
   pid_t pid = getpid ();
   printf ("%d\n", pid);
   init_sig ();

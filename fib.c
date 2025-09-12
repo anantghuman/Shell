@@ -45,6 +45,7 @@ int main (int argc, char **argv)
 
 static void doFibHelper (int n, int doPrint)
 {
+  // anant and alex driving here
   if (n == 0)
     {
       if (doPrint == 1)
@@ -62,9 +63,11 @@ static void doFibHelper (int n, int doPrint)
       exit (1);
     }
 
+  // anant driving here
   int left = 0, right = 0;
   pid_t pid1 = fork ();
 
+  // anant and alex driving here
   if (pid1 == 0)
     {
       doFibHelper (n - 1, 0);
@@ -86,10 +89,12 @@ static void doFibHelper (int n, int doPrint)
       right = WEXITSTATUS (right);
     }
 
+  // alex driving here
   if (doPrint == 1)
     {
       printf ("%d\n", left + right);
     }
+  // anant and alex driving here
   else {
     exit (left + right);
   }
@@ -106,5 +111,6 @@ static void doFibHelper (int n, int doPrint)
 
 static void doFib (int n, int doPrint)
 {
+  // anant driving here
   doFibHelper (n, doPrint);
 }
