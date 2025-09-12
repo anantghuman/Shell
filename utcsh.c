@@ -169,6 +169,7 @@ cmd_node *create_cmd_chain (struct Command cmd)
       printerr ();
       exit (1);
     }
+  // populates the first command's args
   head->cmd.args[index] = NULL;
   for (int k = 0; k < index; k++)
     {
@@ -180,6 +181,7 @@ cmd_node *create_cmd_chain (struct Command cmd)
   // alex driving here
   int i = 0;
   cmd_node *curr_node = head;
+  // on every & we find, we create the next cmd_node and populate its args
   while (cmd.args[i] != NULL)
     {
       if (strcmp (cmd.args[i], "&") == 0)
@@ -243,6 +245,7 @@ char **tokenize_command_line (char *lineptr)
 {
   // anant driving here
   int num_args = 0;
+  // replaces all whitespace with spaces for easier delimiting and counts args
   for (size_t i = 0; i < strlen (lineptr); i++)
     {
       while (isspace (lineptr[i]))
@@ -259,6 +262,7 @@ char **tokenize_command_line (char *lineptr)
       printerr ();
       exit (1);
     }
+  // populates tokens
   char *token = strtok (lineptr, " ");
   int index = 0;
   while (index <= num_args)
@@ -289,6 +293,7 @@ struct Command parse_command (char **tokens)
       return dummy;
     }
   // alex and anant driving here
+  // sets the comand arguments accordingly
   if (strcmp (cmd_name, "exit") == 0)
     {
       dummy.args = tokens;
@@ -340,6 +345,7 @@ int eval (struct Command *cmd)
 
   int i = 0;
   bool external = false;
+  // runs each command in the linked list
   while (cmd_chain != NULL)
     {
       i++;
@@ -370,6 +376,7 @@ int eval (struct Command *cmd)
       return 1;
     }
 
+  // frees the number of children we created
   for (int j = 0; j < i; j++)
     {
       int status;
@@ -463,6 +470,7 @@ int exec_external_cmd (struct Command *cmd)
               int j = 0;
               while (cmd->args[j] != NULL)
                 {
+                  // if we see a >, we need to redirect output to the next arg
                   if (strcmp (cmd->args[j], ">") == 0)
                     {
                       if (cmd->args[j + 1] != NULL && cmd->args[j + 2] == NULL)
@@ -523,5 +531,5 @@ void printerr ()
 {
   // pulled code from part 2.4 of shell project document
   char emsg[30] = "An error has occurred\n";
-  int nbytes_written = write (STDERR_FILENO, emsg, strlen (emsg));
+  write (STDERR_FILENO, emsg, strlen (emsg));
 }

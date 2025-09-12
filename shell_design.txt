@@ -88,7 +88,8 @@ Questions regarding Part 0
     each child process.
 
     There are 14 children being made when doFib() begins with an input of 5.
-    The return value of each of the processes starting with the original process are:
+    The return value of each of the processes starting with the original 
+    process are:
 
     0: Fib(5) → 5
     1: Fib(4) → 3
@@ -121,14 +122,10 @@ Questions regarding Part 1
 
     The call to sigaction changes what the process does when the given
     signal is recieved to the handler that is passed in. In part 1, we
-    use a function* as the handler. Sigaction() was used instead of
-    signal() because it does not allow the signal being changed to be
-    recieved while the handler is being executed. Sigaction() also
-    allows you to keep track of the previous handler in case it needs
-    to be reset or used elsewhere. Lastly, it allows flags to be set
-    like SA_RESTART which makes certain system calls automatically
-    restart if they are interrupted by the signal while the handler is running.
-
+    use a function* as the handler. Sigaction() is used instead of signal()
+    because signal() has differing output across UNIX systems. Sigaction() also
+    allows the user to set flags and block other signals while sigaction() is
+    running which signal doesn't allow.
 
 ################
 Questions regarding Part 2
@@ -142,21 +139,26 @@ Questions regarding Part 2
     Note that you do not need to include concurrent commands in your answer. 
     Part 2 does not include this advanced shell feature.
 
-    We used a struct command containing only a char** with all of the
-    parsed tokens. The first char* pointed to a char array containing
+    We used a struct command containing only a char** tokens with all of the
+    parsed tokens. The first char* in tokens pointed to a char array containing
     the command/executable name. The following char pointers in the
-    command contained either the command/executable arguments if necessary.
-
+    command contained either the command/executable arguments ending with a
+    null. Another alternate way to represent this would be to create a struct
+    Command with a char* command_name and a linked list of all arguments to
+    pass in. An advantage of this is that it is easier to parse through all the
+    arguments and determine where the arguments end, but the disadvantage is
+    that it is hard to access certain arguments in constant time.
 
 (2) An invalid script file is one which does not contain anything (i.e. 
     a size zero file). How did you detect and handle this condition?  
     Describe one other (correct) design that you could have used.
 
     The way that we handled this was to obtain the input file and check
-    if the first character was an EOF. If not, the first character
-    would be put back. Another correct way to handle this would be to
-    check the file size to determine if it is an empty file. If it is,
-    then exit early.
+    if the first character was an EOF before the loop. If not, the first
+    character would be put back. Another correct way to handle this would
+    be to check the file size to determine if it is an empty file. If it 
+    is, then exit early. This can be done through using other functions in 
+    the <std.in> library.
 
 
 ################
@@ -167,12 +169,12 @@ Questions regarding Part 3
     another.
 
     The way that our implementation ensures that concurrent commands are
-    executed concurrently is by first running all commands. If the were
-    expected to be ran concurrently, we call wait() once per command.
-    By doing it this way, we can ensure that the parent process only
-    begins to wait for them after they all begin running concurrently.
-    We only consider this case if the commands are expected to be run
-    concurrently.
+    executed concurrently is by first parsing all commands into a 
+    linkedlist structure linking all concurrent commands. Then we
+    loop through and run each command in the list. After, we call wait() once
+    per command. By doing it this way, we can ensure that the parent process
+    only begins to wait for them after they all begin running concurrently. We
+    only consider this case if the commands are expected to be run concurrently.
 
 (2) One potential strategy for redirecting output is to run 
     the following code:

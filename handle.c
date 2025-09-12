@@ -25,8 +25,7 @@ void printExiting (int signo)
 {
   // pulled code from part 1.2 of shell project instructions
   const int STDOUT = 1;
-  ssize_t bytes;
-  bytes = write (STDOUT, "exiting.\n", 9);
+  write (STDOUT, "exiting\n", 8);
   exit (1);
 }
 
@@ -55,7 +54,7 @@ void init_sig ()
 int main (int argc, char **argv)
 {
   // anant driving here
-  pid_t pid = getpid ();
+  int pid = getpid ();
   printf ("%d\n", pid);
   init_sig ();
   struct timespec time = { 1, 0 };
@@ -63,8 +62,8 @@ int main (int argc, char **argv)
     {
       ssize_t bytes;
       const int STDOUT = 1;
-      bytes = write (STDOUT, "Still here.\n", 12);
-      if (bytes != 12)
+      bytes = write (STDOUT, "Still here\n", 11);
+      if (bytes != 11)
         {
           exit (-999);
         }
