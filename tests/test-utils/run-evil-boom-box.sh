@@ -134,9 +134,11 @@ enable_preloads
 touch $ebb_sys_fn
 ebb_ctr=0
 while [ -f $ebb_sys_fn ]; do
+    echo "running syscall test with counter $ebb_ctr"
     clean_out_dir
     EBB_SYSCALL_CTR=$ebb_ctr ./utcsh $inp_path
     exitnum=$?
+    echo $exitnum
     check_clean_exit
     mirror_signal_exit $exitnum syscall $ebb_ctr
     ebb_ctr=$((ebb_ctr + 1))

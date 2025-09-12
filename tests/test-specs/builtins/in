@@ -1,6 +1,6 @@
 cd ..
 cd /usr/bin
-cd /tmp/alexwang/utcsh
+cd /tmp/anantg/utcsh
 path
 path /usr/bin
 exit

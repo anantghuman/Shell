@@ -63,6 +63,11 @@ int main (int argc, char **argv)
   if (argc == 2)
     {
       f = fopen (argv[1], "r");
+      if (f == NULL) 
+        {
+          printerr();
+          exit(1);
+      }
     }
   else if (argc == 1)
     {
@@ -92,14 +97,16 @@ int main (int argc, char **argv)
       // anant driving here
       if (getline (&lineptr, &n, f) == -1)
         {
-          if (strlen (lineptr) == 0)
+          free (lineptr);
+          if (f == stdin || feof (f))
+            {
+              exit (0);
+            }
+          else
             {
               printerr ();
-              free (lineptr);
               exit (1);
             }
-          free (lineptr);
-          exit (0);
         }
 
       if (isspace (lineptr[strlen (lineptr) - 1]))
@@ -141,6 +148,11 @@ cmd_node *create_cmd_chain (struct Command cmd)
   int index = 0;
   int curr_arg = 0;
   cmd_node *head = calloc (1, sizeof (cmd_node));
+  if (head == NULL)
+    {
+      printerr ();
+      exit (1);
+    }
   head->cmd.args = NULL;
   // anant driving here
   while (cmd.args[index] != NULL)
@@ -152,6 +164,11 @@ cmd_node *create_cmd_chain (struct Command cmd)
       index++;
     }
   head->cmd.args = calloc (1, (index + 1) * sizeof (char *));
+  if (head->cmd.args == NULL)
+    {
+      printerr ();
+      exit (1);
+    }
   head->cmd.args[index] = NULL;
   for (int k = 0; k < index; k++)
     {
@@ -175,6 +192,11 @@ cmd_node *create_cmd_chain (struct Command cmd)
             }
 
           curr_node->next = calloc (1, sizeof (cmd_node));
+          if (curr_node->next == NULL)
+            {
+              printerr ();
+              exit (1);
+            }
           curr_node = curr_node->next;
           // anant and alex driving here
           int num_chars_til_amp = i;
@@ -189,6 +211,11 @@ cmd_node *create_cmd_chain (struct Command cmd)
           // alex driving here
           curr_node->cmd.args
               = calloc (1, (num_chars_til_amp - i + 1) * sizeof (char *));
+              if (curr_node->cmd.args == NULL)
+                {
+                  printerr ();
+                  exit (1);
+                }
           curr_node->cmd.args[num_chars_til_amp - i] = NULL;
           curr_node->next = NULL;
           curr_arg = 0;
@@ -227,6 +254,11 @@ char **tokenize_command_line (char *lineptr)
     }
 
   char **tokens = calloc (1, (num_args + 2) * sizeof (char *));
+  if (tokens == NULL)
+    {
+      printerr ();
+      exit (1);
+    }
   char *token = strtok (lineptr, " ");
   int index = 0;
   while (index <= num_args)
@@ -340,7 +372,13 @@ int eval (struct Command *cmd)
 
   for (int j = 0; j < i; j++)
     {
-      wait (NULL);
+      int status;
+      wait(&status);
+      if (WIFEXITED(status) && WEXITSTATUS(status) != 0) 
+        {
+          free_cmd_chain (head);
+          return WEXITSTATUS(status);
+        }
     }
 
   free_cmd_chain (head);
@@ -443,8 +481,6 @@ int exec_external_cmd (struct Command *cmd)
 
                           close (fd);
                           // anant driving here
-                          cmd->args
-                              = realloc (cmd->args, (j + 1) * sizeof (char *));
                           cmd->args[j] = NULL;
                           break;
                         }
@@ -487,5 +523,5 @@ void printerr ()
 {
   // pulled code from part 2.4 of shell project document
   char emsg[30] = "An error has occurred\n";
-  write (STDERR_FILENO, emsg, strlen (emsg));
+  int nbytes_written = write (STDERR_FILENO, emsg, strlen (emsg));
 }
