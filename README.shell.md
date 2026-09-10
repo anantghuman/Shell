@@ -2,8 +2,6 @@
 
 A lightweight Unix shell implemented from scratch in C, built to explore the operating-system primitives behind command execution: process creation, program loading, path resolution, synchronization, file descriptors, and I/O redirection.
 
-Originally developed as part of **UT Austin CS 439: Principles of Computer Systems**.
-
 ## Features
 
 * **Interactive shell** with a `utcsh>` prompt
